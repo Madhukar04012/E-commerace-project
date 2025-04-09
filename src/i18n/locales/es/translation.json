@@ -1,0 +1,98 @@
+{
+  "common": {
+    "search": "Buscar productos...",
+    "login": "Iniciar sesión",
+    "signup": "Registrarse",
+    "logout": "Cerrar sesión",
+    "cart": "Carrito",
+    "wishlist": "Lista de deseos",
+    "account": "Mi cuenta",
+    "checkout": "Finalizar compra",
+    "continue_shopping": "Continuar comprando",
+    "total": "Total",
+    "subtotal": "Subtotal",
+    "shipping": "Envío",
+    "tax": "Impuestos"
+  },
+  "nav": {
+    "home": "Inicio",
+    "shop": "Tienda",
+    "about": "Acerca de",
+    "contact": "Contacto",
+    "admin": "Administrador"
+  },
+  "product": {
+    "add_to_cart": "Añadir al carrito",
+    "add_to_wishlist": "Añadir a lista de deseos",
+    "remove_from_wishlist": "Quitar de lista de deseos",
+    "out_of_stock": "Agotado",
+    "price": "Precio",
+    "quantity": "Cantidad",
+    "description": "Descripción",
+    "reviews": "Reseñas",
+    "related_products": "Productos relacionados",
+    "write_review": "Escribir una reseña"
+  },
+  "cart": {
+    "title": "Carrito de compras",
+    "empty": "Tu carrito está vacío",
+    "proceed_to_checkout": "Proceder al pago",
+    "clear_cart": "Vaciar carrito",
+    "item": "Artículo",
+    "price": "Precio",
+    "quantity": "Cantidad",
+    "total": "Total",
+    "remove": "Eliminar"
+  },
+  "checkout": {
+    "title": "Finalizar compra",
+    "shipping_info": "Información de envío",
+    "payment_info": "Información de pago",
+    "order_summary": "Resumen del pedido",
+    "first_name": "Nombre",
+    "last_name": "Apellidos",
+    "email": "Correo electrónico",
+    "address": "Dirección",
+    "city": "Ciudad",
+    "state": "Estado/Provincia",
+    "zip": "Código postal",
+    "country": "País",
+    "card_info": "Tarjeta de crédito o débito",
+    "place_order": "Realizar pedido",
+    "secure_payment": "Tu pago se procesa de forma segura. Nunca almacenamos tus datos completos de tarjeta."
+  },
+  "confirmation": {
+    "title": "¡Pedido confirmado!",
+    "thank_you": "Gracias por tu compra. Tu pedido se ha realizado con éxito.",
+    "order_id": "ID del pedido",
+    "order_date": "Fecha del pedido",
+    "whats_next": "¿Qué sigue?",
+    "download_invoice": "Descargar factura",
+    "steps": {
+      "step1": "Recibirás una confirmación por correo electrónico en breve.",
+      "step2": "Tu pedido será procesado en 1-2 días hábiles.",
+      "step3": "Recibirás información de seguimiento una vez que tu pedido sea enviado.",
+      "step4": "Por favor, permite 3-5 días hábiles para envío estándar o 1-2 días para envío express."
+    }
+  },
+  "auth": {
+    "login": {
+      "title": "Iniciar sesión",
+      "email": "Correo electrónico",
+      "password": "Contraseña",
+      "forgot_password": "¿Olvidaste tu contraseña?",
+      "no_account": "¿No tienes una cuenta?",
+      "create_account": "Crear una cuenta",
+      "submit": "Iniciar sesión"
+    },
+    "signup": {
+      "title": "Crear cuenta",
+      "email": "Correo electrónico",
+      "password": "Contraseña",
+      "confirm_password": "Confirmar contraseña",
+      "have_account": "¿Ya tienes una cuenta?",
+      "sign_in": "Iniciar sesión",
+      "submit": "Crear cuenta"
+    }
+  }
+} 

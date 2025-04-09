@@ -1,0 +1,98 @@
+{
+  "common": {
+    "search": "Search products...",
+    "login": "Sign in",
+    "signup": "Sign up",
+    "logout": "Sign out",
+    "cart": "Cart",
+    "wishlist": "Wishlist",
+    "account": "My Account",
+    "checkout": "Checkout",
+    "continue_shopping": "Continue Shopping",
+    "total": "Total",
+    "subtotal": "Subtotal",
+    "shipping": "Shipping",
+    "tax": "Tax"
+  },
+  "nav": {
+    "home": "Home",
+    "shop": "Shop",
+    "about": "About",
+    "contact": "Contact",
+    "admin": "Admin"
+  },
+  "product": {
+    "add_to_cart": "Add to Cart",
+    "add_to_wishlist": "Add to Wishlist",
+    "remove_from_wishlist": "Remove from Wishlist",
+    "out_of_stock": "Out of Stock",
+    "price": "Price",
+    "quantity": "Quantity",
+    "description": "Description",
+    "reviews": "Reviews",
+    "related_products": "Related Products",
+    "write_review": "Write a Review"
+  },
+  "cart": {
+    "title": "Shopping Cart",
+    "empty": "Your cart is empty",
+    "proceed_to_checkout": "Proceed to Checkout",
+    "clear_cart": "Clear Cart",
+    "item": "Item",
+    "price": "Price",
+    "quantity": "Quantity",
+    "total": "Total",
+    "remove": "Remove"
+  },
+  "checkout": {
+    "title": "Checkout",
+    "shipping_info": "Shipping Information",
+    "payment_info": "Payment Information",
+    "order_summary": "Order Summary",
+    "first_name": "First Name",
+    "last_name": "Last Name",
+    "email": "Email Address",
+    "address": "Street Address",
+    "city": "City",
+    "state": "State",
+    "zip": "ZIP Code",
+    "country": "Country",
+    "card_info": "Credit or Debit Card",
+    "place_order": "Place Order",
+    "secure_payment": "Your payment is securely processed. We never store your full credit card details."
+  },
+  "confirmation": {
+    "title": "Order Confirmed!",
+    "thank_you": "Thank you for your purchase. Your order has been successfully placed.",
+    "order_id": "Order ID",
+    "order_date": "Order Date",
+    "whats_next": "What Happens Next?",
+    "download_invoice": "Download Invoice",
+    "steps": {
+      "step1": "You will receive an email confirmation shortly.",
+      "step2": "Your order will be processed within 1-2 business days.",
+      "step3": "You'll receive tracking information once your order ships.",
+      "step4": "Please allow 3-5 business days for standard shipping or 1-2 days for express shipping."
+    }
+  },
+  "auth": {
+    "login": {
+      "title": "Sign In",
+      "email": "Email",
+      "password": "Password",
+      "forgot_password": "Forgot Password?",
+      "no_account": "Don't have an account?",
+      "create_account": "Create an Account",
+      "submit": "Sign In"
+    },
+    "signup": {
+      "title": "Create Account",
+      "email": "Email",
+      "password": "Password",
+      "confirm_password": "Confirm Password",
+      "have_account": "Already have an account?",
+      "sign_in": "Sign In",
+      "submit": "Create Account"
+    }
+  }
+} 

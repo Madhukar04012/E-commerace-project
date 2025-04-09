@@ -1,0 +1,98 @@
+{
+  "common": {
+    "search": "Rechercher des produits...",
+    "login": "Se connecter",
+    "signup": "S'inscrire",
+    "logout": "Déconnexion",
+    "cart": "Panier",
+    "wishlist": "Liste de souhaits",
+    "account": "Mon compte",
+    "checkout": "Commander",
+    "continue_shopping": "Continuer les achats",
+    "total": "Total",
+    "subtotal": "Sous-total",
+    "shipping": "Livraison",
+    "tax": "Taxes"
+  },
+  "nav": {
+    "home": "Accueil",
+    "shop": "Boutique",
+    "about": "À propos",
+    "contact": "Contact",
+    "admin": "Administration"
+  },
+  "product": {
+    "add_to_cart": "Ajouter au panier",
+    "add_to_wishlist": "Ajouter aux favoris",
+    "remove_from_wishlist": "Retirer des favoris",
+    "out_of_stock": "Rupture de stock",
+    "price": "Prix",
+    "quantity": "Quantité",
+    "description": "Description",
+    "reviews": "Avis",
+    "related_products": "Produits associés",
+    "write_review": "Écrire un avis"
+  },
+  "cart": {
+    "title": "Panier",
+    "empty": "Votre panier est vide",
+    "proceed_to_checkout": "Passer à la caisse",
+    "clear_cart": "Vider le panier",
+    "item": "Article",
+    "price": "Prix",
+    "quantity": "Quantité",
+    "total": "Total",
+    "remove": "Supprimer"
+  },
+  "checkout": {
+    "title": "Commander",
+    "shipping_info": "Informations de livraison",
+    "payment_info": "Informations de paiement",
+    "order_summary": "Récapitulatif de la commande",
+    "first_name": "Prénom",
+    "last_name": "Nom",
+    "email": "Adresse e-mail",
+    "address": "Adresse",
+    "city": "Ville",
+    "state": "Région",
+    "zip": "Code postal",
+    "country": "Pays",
+    "card_info": "Carte de crédit ou de débit",
+    "place_order": "Passer la commande",
+    "secure_payment": "Votre paiement est traité en toute sécurité. Nous ne stockons jamais vos données de carte complètes."
+  },
+  "confirmation": {
+    "title": "Commande confirmée !",
+    "thank_you": "Merci pour votre achat. Votre commande a été passée avec succès.",
+    "order_id": "N° de commande",
+    "order_date": "Date de commande",
+    "whats_next": "Que se passe-t-il ensuite ?",
+    "download_invoice": "Télécharger la facture",
+    "steps": {
+      "step1": "Vous recevrez un email de confirmation sous peu.",
+      "step2": "Votre commande sera traitée sous 1 à 2 jours ouvrables.",
+      "step3": "Vous recevrez les informations de suivi une fois votre commande expédiée.",
+      "step4": "Veuillez prévoir 3 à 5 jours ouvrables pour la livraison standard ou 1 à 2 jours pour la livraison express."
+    }
+  },
+  "auth": {
+    "login": {
+      "title": "Se connecter",
+      "email": "Email",
+      "password": "Mot de passe",
+      "forgot_password": "Mot de passe oublié ?",
+      "no_account": "Vous n'avez pas de compte ?",
+      "create_account": "Créer un compte",
+      "submit": "Se connecter"
+    },
+    "signup": {
+      "title": "Créer un compte",
+      "email": "Email",
+      "password": "Mot de passe",
+      "confirm_password": "Confirmer le mot de passe",
+      "have_account": "Vous avez déjà un compte ?",
+      "sign_in": "Se connecter",
+      "submit": "Créer un compte"
+    }
+  }
+} 
