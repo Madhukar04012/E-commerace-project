@@ -28,11 +28,22 @@ jobs:
       - name: Build
         run: npm run build
         
+      - name: Check build output
+        run: |
+          if [ ! -d "dist" ]; then
+            echo "Error: dist/ directory does not exist"
+            exit 1
+          fi
+          echo "Build output exists in dist/ directory"
+          ls -la dist/
+        
       - name: Upload build artifacts
         uses: actions/upload-artifact@v3
         with:
           name: build-files
           path: dist/
+          if-no-files-found: error # Will fail if no files are found
+          retention-days: 1 # Only keep artifacts for 1 day to save space
 
   docker-build:
     needs: build-and-test
@@ -47,6 +58,15 @@ jobs:
         with:
           name: build-files
           path: dist/
+          
+      - name: Verify downloaded artifacts
+        run: |
+          if [ ! -d "dist" ] || [ -z "$(ls -A dist/)" ]; then
+            echo "Error: dist/ directory is empty or does not exist"
+            exit 1
+          fi
+          echo "Contents of dist directory:"
+          ls -la dist/
           
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
