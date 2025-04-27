@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 
 const FlashDeals = () => {
-  const [activeDeals, setActiveDeals] = useState([
+  const [activeDeals] = useState([
     {
       id: 1,
       title: "Gaming Laptops",
