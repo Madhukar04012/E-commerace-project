@@ -25,6 +25,7 @@ export default function AddReview({ productId, onAddReview }) {
     // Create new review object
     const newReview = {
       id: Date.now(), // Simple unique ID for demo purposes
+      productId, // Add productId to the review
       userId: currentUser?.uid || 'guest',
       userName: currentUser?.email?.split('@')[0] || 'Guest User',
       rating,

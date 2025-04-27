@@ -1,16 +1,38 @@
 // src/pages/Home.jsx
-import ProductCard from "../components/ProductCard";
-import { products } from "../data/products";
+import React from 'react';
+import Hero from '../components/Hero';
+import FlashDeals from '../components/FlashDeals';
+import Categories from '../components/Categories';
+import FeaturedProducts from '../components/FeaturedProducts';
+import SummerSale from '../components/SummerSale';
 
-export default function Home() {
+const Home = () => {
   return (
-    <div className="max-w-7xl mx-auto px-4 py-10">
-      <h1 className="text-3xl font-bold mb-6 text-center">Our Products</h1>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {products.map((product) => (
-          <ProductCard key={product.id} product={product} />
-        ))}
+    <div className="min-h-screen bg-gray-50">
+      {/* Hero Section */}
+      <Hero />
+      
+      {/* Summer Sale Banner */}
+      <div className="mb-8">
+        <SummerSale />
+      </div>
+      
+      {/* Flash Deals Section */}
+      <div className="py-8">
+        <FlashDeals />
+      </div>
+      
+      {/* Categories Section */}
+      <div className="py-8">
+        <Categories />
+      </div>
+      
+      {/* Featured Products Section */}
+      <div className="py-8">
+        <FeaturedProducts />
       </div>
     </div>
   );
-}
+};
+
+export default Home;

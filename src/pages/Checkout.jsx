@@ -129,14 +129,8 @@ function CheckoutForm() {
       date: new Date().toISOString(),
       items: cartItems,
       subtotal: subtotal,
-      shipping: shipping,
-      tax: tax,
-      total: total,
-      customer: {
-        name: `${formData.firstName} ${formData.lastName}`,
-        email: formData.email
-      },
       shipping: {
+        cost: shipping,
         address: {
           street: formData.address,
           city: formData.city,
@@ -144,6 +138,12 @@ function CheckoutForm() {
           zip: formData.zip,
           country: formData.country
         }
+      },
+      tax: tax,
+      total: total,
+      customer: {
+        name: `${formData.firstName} ${formData.lastName}`,
+        email: formData.email
       },
       payment: {
         id: paymentMethod.id,

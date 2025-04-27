@@ -3,7 +3,7 @@ import { useSearch } from "../context/SearchContext";
 import { Slider } from "@mui/material";
 
 export default function ProductFilters() {
-  const { filters, applyFilters, error } = useSearch();
+  const { filters, applyFilters, error, filteredProducts } = useSearch();
   const [localFilters, setLocalFilters] = useState(filters);
   const [categories, setCategories] = useState([]);
 
@@ -15,13 +15,12 @@ export default function ProductFilters() {
   // Get unique categories from products
   useEffect(() => {
     try {
-      const { filteredProducts } = useSearch();
       const uniqueCategories = [...new Set(filteredProducts.map(p => p.category))].filter(Boolean);
       setCategories(uniqueCategories);
     } catch (err) {
       console.error("Error getting categories:", err);
     }
-  }, []);
+  }, [filteredProducts]);
 
   const handlePriceRangeChange = (e, index) => {
     const newPriceRange = [...localFilters.priceRange];
@@ -43,34 +42,6 @@ export default function ProductFilters() {
     } catch (err) {
       console.error("Error applying filters:", err);
     }
-  };
-
-  const handlePriceChange = (event, newValue) => {
-    applyFilters({
-      ...filters,
-      priceRange: newValue,
-    });
-  };
-
-  const handleRatingChange = (rating) => {
-    applyFilters({
-      ...filters,
-      rating: rating,
-    });
-  };
-
-  const handleBrandChange = (brand) => {
-    applyFilters({
-      ...filters,
-      brand: brand,
-    });
-  };
-
-  const handleStockChange = (e) => {
-    applyFilters({
-      ...filters,
-      inStock: e.target.checked,
-    });
   };
 
   return (

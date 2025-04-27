@@ -14,7 +14,6 @@ export default function ProductDetail() {
   const { addToCart, cartItems, updateQuantity } = useCart();
   const { getProductReviews, getAverageRating } = useReviews();
   const [quantity, setQuantity] = useState(1);
-  const [showReviewForm, setShowReviewForm] = useState(false);
   const [productData, setProductData] = useState(null);
   const [activeTab, setActiveTab] = useState('description');
   const [wishlist, setWishlist] = useState(() => {
@@ -158,6 +157,14 @@ export default function ProductDetail() {
               {cartItems.some(item => item.id === productData.id) ? 'Update Cart' : 'Add to Cart'}
             </button>
             
+            <button
+              onClick={handleBuyNow}
+              disabled={!(productData.stock > 0 || productData.inStock)}
+              className={`px-6 py-3 text-white font-medium rounded-md ${(productData.stock > 0 || productData.inStock) ? 'bg-green-600 hover:bg-green-700' : 'bg-gray-400 cursor-not-allowed'}`}
+            >
+              Buy Now
+            </button>
+            
             <button 
               onClick={toggleWishlist} 
               className="p-3 rounded-md border border-gray-300 text-gray-700 hover:bg-gray-50"
@@ -199,103 +206,41 @@ export default function ProductDetail() {
       {/* Product Tabs */}
       <div className="mt-12">
         <div className="border-b border-gray-200">
-          <nav className="flex space-x-8">
+          <nav className="-mb-px flex space-x-8">
             <button
               onClick={() => setActiveTab('description')}
-              className={`py-4 px-1 font-medium text-sm border-b-2 ${activeTab === 'description' ? 'border-blue-500 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'}`}
+              className={`${
+                activeTab === 'description'
+                  ? 'border-blue-500 text-blue-600'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+              } whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm`}
             >
               Description
             </button>
             <button
-              onClick={() => setActiveTab('features')}
-              className={`py-4 px-1 font-medium text-sm border-b-2 ${activeTab === 'features' ? 'border-blue-500 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'}`}
-            >
-              Features
-            </button>
-            <button
               onClick={() => setActiveTab('reviews')}
-              className={`py-4 px-1 font-medium text-sm border-b-2 ${activeTab === 'reviews' ? 'border-blue-500 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'}`}
+              className={`${
+                activeTab === 'reviews'
+                  ? 'border-blue-500 text-blue-600'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+              } whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm`}
             >
               Reviews ({reviews.length})
             </button>
           </nav>
         </div>
-        
+
         <div className="py-6">
-          {activeTab === 'description' && (
+          {activeTab === 'description' ? (
             <div className="prose max-w-none">
               <p>{productData.description}</p>
             </div>
-          )}
-          
-          {activeTab === 'features' && (
-            <div className="prose max-w-none">
-              {productData.features ? (
-                <ul className="list-disc pl-5 space-y-2">
-                  {productData.features.map((feature, index) => (
-                    <li key={index}>{feature}</li>
-                  ))}
-                </ul>
-              ) : (
-                <p>No detailed features available for this product.</p>
-              )}
-            </div>
-          )}
-          
-          {activeTab === 'reviews' && (
+          ) : (
             <div>
-              {reviews.length > 0 ? (
-                <div className="space-y-6">
-                  {reviews.map(review => (
-                    <div key={review.id} className="border-b border-gray-200 pb-6">
-                      <div className="flex items-center mb-2">
-                        <h3 className="font-medium mr-2">{review.title}</h3>
-                        <div className="flex text-yellow-500">
-                          {renderStars(review.rating)}
-                        </div>
-                      </div>
-                      <p className="text-sm text-gray-600 mb-2">
-                        By {review.username || 'Anonymous'} on {typeof review.date === 'object' ? review.date.toLocaleDateString() : review.date}
-                      </p>
-                      <p className="text-gray-700">{review.comment}</p>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <p className="text-gray-500">No reviews yet for this product.</p>
-              )}
-              
-              <div className="mt-8">
-                <h3 className="text-lg font-medium mb-4">Write a Review</h3>
-                <p className="text-gray-600 mb-4">Please <Link to="/login" className="text-blue-600 hover:underline">log in</Link> to write a review.</p>
-              </div>
+              <ReviewList reviews={reviews} />
+              <ReviewForm productId={productId} />
             </div>
           )}
-        </div>
-      </div>
-
-      {/* Related Products */}
-      <div className="mt-12">
-        <h2 className="text-2xl font-bold mb-6">You May Also Like</h2>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-          {mockProducts
-            .filter(p => p.category === productData.category && p.id !== productData.id)
-            .slice(0, 4)
-            .map(relatedProduct => (
-              <div key={relatedProduct.id} className="border border-gray-200 rounded-lg overflow-hidden shadow-sm hover:shadow-md transition duration-300">
-                <Link to={`/product/${relatedProduct.id}`}>
-                  <img 
-                    src={relatedProduct.image} 
-                    alt={relatedProduct.name} 
-                    className="w-full h-48 object-cover" 
-                  />
-                  <div className="p-4">
-                    <h3 className="font-medium text-gray-900 truncate">{relatedProduct.name}</h3>
-                    <p className="text-blue-600 font-semibold mt-1">${relatedProduct.price.toFixed(2)}</p>
-                  </div>
-                </Link>
-              </div>
-            ))}
         </div>
       </div>
     </div>
