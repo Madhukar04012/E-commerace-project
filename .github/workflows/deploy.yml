@@ -20,22 +20,46 @@ jobs:
           cache: 'npm'
           
       - name: Install dependencies
-        run: npm ci
-        
+        run: |
+          echo "Installing dependencies..."
+          npm ci
+          echo "Dependencies installed successfully"
+          
+      - name: Debug environment
+        run: |
+          echo "Node version:"
+          node --version
+          echo "NPM version:"
+          npm --version
+          echo "Current directory:"
+          pwd
+          echo "Directory contents:"
+          ls -la
+          
       - name: Run linting
         run: npm run lint || true
         
       - name: Build
-        run: npm run build
-        
-      - name: Check build output
         run: |
-          if [ ! -d "dist" ]; then
-            echo "Error: dist/ directory does not exist"
+          echo "Starting build process..."
+          npm run build
+          echo "Build process completed"
+        
+      - name: Debug build output
+        run: |
+          echo "Current directory contents:"
+          ls -la
+          echo "Checking for dist directory:"
+          if [ -d "dist" ]; then
+            echo "dist directory exists"
+            echo "Contents of dist directory:"
+            ls -la dist/
+          else
+            echo "Error: dist directory not found"
+            echo "Contents of current directory:"
+            ls -la
             exit 1
           fi
-          echo "Build output exists in dist/ directory"
-          ls -la dist/
         
       - name: Upload build artifacts
         uses: actions/upload-artifact@v3
@@ -59,14 +83,23 @@ jobs:
           name: build-files
           path: dist/
           
-      - name: Verify downloaded artifacts
+      - name: Debug downloaded artifacts
         run: |
-          if [ ! -d "dist" ] || [ -z "$(ls -A dist/)" ]; then
-            echo "Error: dist/ directory is empty or does not exist"
+          echo "Current directory contents:"
+          ls -la
+          echo "Checking downloaded artifacts:"
+          if [ -d "dist" ]; then
+            echo "dist directory exists"
+            echo "Contents of dist directory:"
+            ls -la dist/
+            if [ -z "$(ls -A dist/)" ]; then
+              echo "Error: dist directory is empty"
+              exit 1
+            fi
+          else
+            echo "Error: dist directory not found after download"
             exit 1
           fi
-          echo "Contents of dist directory:"
-          ls -la dist/
           
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
