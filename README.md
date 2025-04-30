@@ -1,22 +1,30 @@
 # E-Commerce Website
 
-A modern, responsive e-commerce website built with React, featuring 3D effects and advanced animations.
+A modern, responsive e-commerce website built with React, featuring dark mode, accessibility features, SEO optimization, and advanced animations.
+
+## 🌟 Live Demo
+
+Visit the live website: [eCommerce Website](https://ecommerce-website-00001.web.app)
 
 ## Features
 
-- Modern, Amazon-inspired homepage layout
+- Modern, polished UI with dark/light mode toggle
 - Dynamic product browsing and search
 - Detailed product pages with 3D visualization
 - Shopping cart functionality with animations
 - User authentication with Firebase
+- Admin dashboard and management
 - Wishlist management
 - Secure checkout process
 - Order confirmation and tracking
 - Flash Deals with real-time countdowns
 - Categories section with hover effects
 - Multi-language support (i18n)
-- Responsive design for all devices
+- Fully responsive design for all devices
 - Performance optimized builds
+- SEO optimized with react-helmet-async
+- Toast notification system
+- Accessibility compliant design
 
 ## Technology Stack
 
@@ -27,11 +35,12 @@ A modern, responsive e-commerce website built with React, featuring 3D effects a
 - Tailwind CSS for styling
 - Framer Motion for animations
 - Three.js for 3D effects
-- Firebase for backend services
+- Firebase for backend services and hosting
 - i18next for internationalization
 - EmailJS for email notifications
 - Stripe for payment processing
 - GitHub Actions for CI/CD
+- React Helmet Async for SEO
 
 ## Getting Started
 
@@ -61,6 +70,20 @@ A modern, responsive e-commerce website built with React, featuring 3D effects a
 
 4. Open your browser and navigate to `http://localhost:5173/`
 
+### Deployment
+
+The project is set up for continuous deployment to Firebase Hosting:
+
+1. Build the project
+   ```
+   npm run build
+   ```
+
+2. Deploy to Firebase
+   ```
+   firebase deploy
+   ```
+
 ## Project Structure
 
 - `/src` - Source code
@@ -68,10 +91,12 @@ A modern, responsive e-commerce website built with React, featuring 3D effects a
   - `/context` - React context providers
   - `/data` - Mock data and configurations
   - `/pages` - Main application pages
+  - `/hooks` - Custom React hooks
   - `/utils` - Utility functions
   - `/i18n` - Internationalization files
   - `/firebase` - Firebase configuration
   - `/assets` - Static assets and images
+  - `/services` - API and service functions
 
 ## Features in Detail
 
@@ -81,6 +106,7 @@ A modern, responsive e-commerce website built with React, featuring 3D effects a
 - Interactive product categories
 - Smooth animations and transitions
 - Advanced search with Fuse.js
+- Dark/light mode theme toggle
 
 ### Shopping Cart
 - Add/remove items with animations
@@ -96,6 +122,13 @@ A modern, responsive e-commerce website built with React, featuring 3D effects a
 - Order history tracking
 - Wishlist synchronization
 
+### Admin Features
+- Admin dashboard with analytics
+- Product management
+- Order processing
+- User management
+- Access control based on roles
+
 ### Product Catalog
 - Advanced filtering system
 - Dynamic category navigation
@@ -104,24 +137,28 @@ A modern, responsive e-commerce website built with React, featuring 3D effects a
 - Related products suggestions
 
 ### Internationalization
-- Multi-language support
+- Multi-language support (English, Spanish, French)
 - Auto-language detection
-- RTL support for Arabic
 - Localized currency display
+
+### Accessibility Features
+- Proper color contrast ratios
+- ARIA attributes
+- Screen reader friendly markup
+- Focus management
+- Keyboard navigation support
 
 ### Performance Optimizations
 - Code splitting with Vite
 - Lazy loading of components
 - Optimized bundle size
-- Efficient asset loading
+- Efficient asset loading with WebP support
 - Caching strategies
 
 ### CI/CD Pipeline
 - Automated builds with GitHub Actions
-- Artifact management
-- Docker containerization
-- Automated testing
-- Production deployment workflow
+- Firebase hosting deployment
+- Testing integration
 
 ## Development Tools
 
