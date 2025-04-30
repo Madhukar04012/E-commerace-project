@@ -5,7 +5,8 @@ import {
   arrayUnion, 
   arrayRemove,
   setDoc,
-  serverTimestamp
+  serverTimestamp,
+  deleteDoc
 } from "firebase/firestore";
 import { db } from "../firebase/config";
 
@@ -269,25 +270,24 @@ export const getCart = async (userId) => {
     const docSnap = await getDoc(docRef);
     
     if (docSnap.exists()) {
+      const cartData = docSnap.data();
       return {
-        id: docSnap.id,
-        ...docSnap.data()
+        items: cartData.items || [],
+        total: cartData.total || 0,
+        itemCount: cartData.itemCount || 0,
+        updatedAt: cartData.updatedAt
       };
     } else {
       // Create empty cart if it doesn't exist
-      const emptyCart = { 
+      const emptyCart = {
         items: [],
         total: 0,
         itemCount: 0,
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp()
       };
-      
       await setDoc(docRef, emptyCart);
-      return {
-        id: userId,
-        ...emptyCart
-      };
+      return emptyCart;
     }
   } catch (error) {
     console.error("Error fetching cart:", error);
@@ -296,43 +296,27 @@ export const getCart = async (userId) => {
 };
 
 /**
- * Update cart
+ * Update user's cart
  * @param {string} userId - User ID
  * @param {Array} items - Cart items
- * @returns {Promise<Object>} Updated cart
+ * @returns {Promise<boolean>} Success status
  */
 export const updateCart = async (userId, items) => {
   try {
     const docRef = doc(db, CARTS_COLLECTION, userId);
     
     // Calculate totals
-    const itemCount = items.reduce((total, item) => total + item.quantity, 0);
-    const total = items.reduce((total, item) => total + (item.price * item.quantity), 0);
+    const total = items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    const itemCount = items.reduce((sum, item) => sum + item.quantity, 0);
     
-    const cartData = {
+    await setDoc(docRef, {
       items,
-      itemCount,
       total,
+      itemCount,
       updatedAt: serverTimestamp()
-    };
+    }, { merge: true });
     
-    // Check if cart exists
-    const docSnap = await getDoc(docRef);
-    
-    if (docSnap.exists()) {
-      await updateDoc(docRef, cartData);
-    } else {
-      await setDoc(docRef, {
-        ...cartData,
-        createdAt: serverTimestamp()
-      });
-    }
-    
-    return {
-      id: userId,
-      ...cartData,
-      items
-    };
+    return true;
   } catch (error) {
     console.error("Error updating cart:", error);
     throw error;
@@ -340,21 +324,14 @@ export const updateCart = async (userId, items) => {
 };
 
 /**
- * Clear cart
+ * Clear user's cart
  * @param {string} userId - User ID
  * @returns {Promise<boolean>} Success status
  */
 export const clearCart = async (userId) => {
   try {
     const docRef = doc(db, CARTS_COLLECTION, userId);
-    
-    await updateDoc(docRef, {
-      items: [],
-      total: 0,
-      itemCount: 0,
-      updatedAt: serverTimestamp()
-    });
-    
+    await deleteDoc(docRef);
     return true;
   } catch (error) {
     console.error("Error clearing cart:", error);

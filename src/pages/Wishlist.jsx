@@ -1,7 +1,8 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { useCart } from '../context/CartContext';
+import { useCart } from '../hooks/useCart';
 import StarRating from '../components/StarRating';
+import { handleImageError } from "../utils/imageFallback";
 
 export default function Wishlist() {
   const { wishlistItems, removeFromWishlist, moveToCart, moveAllToCart } = useCart();
@@ -79,9 +80,7 @@ export default function Wishlist() {
                   src={item.image}
                   alt={item.name}
                   className="w-full h-48 object-contain rounded-md"
-                  onError={(e) => {
-                    e.target.src = "https://via.placeholder.com/300x300?text=No+Image";
-                  }}
+                  onError={handleImageError}
                 />
               </Link>
             </div>

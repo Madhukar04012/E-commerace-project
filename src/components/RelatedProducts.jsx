@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { products } from '../data/products';
 import StarRating from './StarRating';
+import { handleImageError } from "../utils/imageFallback";
 
 export default function RelatedProducts({ currentProductId, category, limit = 4 }) {
   // Find related products (same category but not the current product)
@@ -28,9 +29,7 @@ export default function RelatedProducts({ currentProductId, category, limit = 4 
                 src={product.image} 
                 alt={product.name}
                 className="w-full h-40 object-cover"
-                onError={(e) => {
-                  e.target.src = "https://via.placeholder.com/300x200?text=No+Image";
-                }}
+                onError={handleImageError}
               />
               <div className="p-4">
                 <h3 className="font-medium text-gray-900 mb-1">{product.name}</h3>

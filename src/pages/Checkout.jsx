@@ -1,10 +1,11 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useCart } from "../context/CartContext";
-import { useAuth } from "../context/AuthContext";
+import { useCart } from "../hooks/useCart";
+import { useAuth } from "../hooks/useAuth";
 import { Elements, CardElement, useStripe, useElements } from "@stripe/react-stripe-js";
 import { getStripe, processPayment } from "../services/stripeService";
 import { sendOrderConfirmationEmail } from "../services/emailService";
+import { handleImageError } from "../utils/imageFallback";
 
 // Styles for the Stripe card element
 const CARD_ELEMENT_OPTIONS = {
@@ -380,9 +381,7 @@ function CheckoutForm() {
                       src={item.image}
                       alt={item.name}
                       className="h-full w-full object-contain"
-                      onError={(e) => {
-                        e.target.src = "https://via.placeholder.com/150?text=Product";
-                      }}
+                      onError={(e) => handleImageError(e, 'small')}
                     />
                   </div>
                   <div className="ml-4 flex-1">

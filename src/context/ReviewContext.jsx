@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
-const ReviewContext = createContext();
+// Create and export the ReviewContext
+export const ReviewContext = createContext();
 
 export const useReviews = () => useContext(ReviewContext);
 

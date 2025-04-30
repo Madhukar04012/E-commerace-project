@@ -1,46 +1,37 @@
-import { createContext, useState, useContext, useEffect } from "react";
-import { useAuth } from "./AuthContext";
+import { useState, useEffect } from "react";
+import { useAuth } from "../hooks/useAuth";
 import { getCart, updateCart, clearCart as clearFirestoreCart } from "../services/userDataService";
 import { addToWishlist, removeFromWishlist, getWishlist } from "../services/userDataService";
-
-const CartContext = createContext();
+import { CartContext } from "../hooks/useCart";
 
 export const CartProvider = ({ children }) => {
-  const { currentUser } = useAuth();
-  
   // Cart state
   const [cartItems, setCartItems] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [cartTotal, setCartTotal] = useState(0);
   const [itemCount, setItemCount] = useState(0);
-  const [loading, setLoading] = useState(true);
-
+  
   // Wishlist state
   const [wishlistItems, setWishlistItems] = useState([]);
   const [wishlistLoading, setWishlistLoading] = useState(true);
+  
+  const { currentUser } = useAuth();
 
-  // Load cart from Firestore if logged in, localStorage if not
+  // Load cart and wishlist data when user changes
   useEffect(() => {
     const loadCart = async () => {
       setLoading(true);
       try {
         if (currentUser) {
-          // User is logged in, get cart from Firestore
-          const cartData = await getCart(currentUser.uid);
-          setCartItems(cartData.items || []);
-          setCartTotal(cartData.total || 0);
-          setItemCount(cartData.itemCount || 0);
-        } else {
-          // User is not logged in, get cart from localStorage
-          const savedCart = localStorage.getItem('cart');
-          const parsedCart = savedCart ? JSON.parse(savedCart) : [];
-          setCartItems(parsedCart);
-          
-          // Calculate totals
-          const total = parsedCart.reduce((sum, item) => sum + (item.price * (item.quantity || 1)), 0);
-          const count = parsedCart.reduce((sum, item) => sum + (item.quantity || 1), 0);
-          
-          setCartTotal(total);
-          setItemCount(count);
+          const userCart = await getCart(currentUser.uid);
+          if (userCart) {
+            setCartItems(userCart);
+            // Calculate totals
+            const total = userCart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            const count = userCart.reduce((sum, item) => sum + item.quantity, 0);
+            setCartTotal(total);
+            setItemCount(count);
+          }
         }
       } catch (error) {
         console.error("Error loading cart:", error);
@@ -48,23 +39,15 @@ export const CartProvider = ({ children }) => {
         setLoading(false);
       }
     };
-    
-    loadCart();
-  }, [currentUser]);
 
-  // Load wishlist
-  useEffect(() => {
     const loadWishlist = async () => {
       setWishlistLoading(true);
       try {
         if (currentUser) {
-          // User is logged in, get wishlist from Firestore
-          const wishlistData = await getWishlist(currentUser.uid);
-          setWishlistItems(wishlistData || []);
-        } else {
-          // User is not logged in, get wishlist from localStorage
-          const savedWishlist = localStorage.getItem('wishlist');
-          setWishlistItems(savedWishlist ? JSON.parse(savedWishlist) : []);
+          const userWishlist = await getWishlist(currentUser.uid);
+          if (userWishlist) {
+            setWishlistItems(userWishlist);
+          }
         }
       } catch (error) {
         console.error("Error loading wishlist:", error);
@@ -72,20 +55,23 @@ export const CartProvider = ({ children }) => {
         setWishlistLoading(false);
       }
     };
-    
+
+    loadCart();
     loadWishlist();
   }, [currentUser]);
 
-  // Save cart to localStorage when not logged in
+  // Update totals when cart changes
   useEffect(() => {
-    if (!currentUser && cartItems.length > 0) {
-      localStorage.setItem('cart', JSON.stringify(cartItems));
-    }
-  }, [cartItems, currentUser]);
+    const total = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    const count = cartItems.reduce((sum, item) => sum + item.quantity, 0);
+    
+    setCartTotal(total);
+    setItemCount(count);
+  }, [cartItems]);
 
-  // Save wishlist to localStorage when not logged in
+  // Update local storage when wishlist changes
   useEffect(() => {
-    if (!currentUser && wishlistItems.length > 0) {
+    if (wishlistItems.length > 0) {
       localStorage.setItem('wishlist', JSON.stringify(wishlistItems));
     }
   }, [wishlistItems, currentUser]);
@@ -116,7 +102,7 @@ export const CartProvider = ({ children }) => {
     
     setCartTotal(newTotal);
     setItemCount(newCount);
-    
+
     // Update Firestore if logged in
     if (currentUser) {
       try {
@@ -139,7 +125,7 @@ export const CartProvider = ({ children }) => {
     
     setCartTotal(newTotal);
     setItemCount(newCount);
-    
+
     // Update Firestore if logged in
     if (currentUser) {
       try {
@@ -159,14 +145,14 @@ export const CartProvider = ({ children }) => {
     
     // Update state immediately for better UX
     setCartItems(updatedCart);
-    
+
     // Calculate new totals
     const newTotal = updatedCart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
     const newCount = updatedCart.reduce((sum, item) => sum + item.quantity, 0);
     
     setCartTotal(newTotal);
     setItemCount(newCount);
-    
+
     // Update Firestore if logged in
     if (currentUser) {
       try {
@@ -181,12 +167,8 @@ export const CartProvider = ({ children }) => {
     setCartItems([]);
     setCartTotal(0);
     setItemCount(0);
-    
-    // Clear localStorage if not logged in
-    if (!currentUser) {
-      localStorage.removeItem('cart');
-    } else {
-      // Clear cart in Firestore
+
+    if (currentUser) {
       try {
         await clearFirestoreCart(currentUser.uid);
       } catch (error) {
@@ -197,105 +179,73 @@ export const CartProvider = ({ children }) => {
 
   // Wishlist functions
   const addToWishlistHandler = async (product) => {
-    // Check if product is already in wishlist
-    const isInWishlistAlready = wishlistItems.some(item => item.id === product.id);
-    
-    if (isInWishlistAlready) return;
-    
-    // Simplified product for wishlist
-    const wishlistProduct = {
-      id: product.id,
-      name: product.name,
-      price: product.price,
-      image: product.image,
-      description: product.description
-    };
-    
-    // Update state immediately for better UX
-    setWishlistItems(prev => [...prev, wishlistProduct]);
-    
-    // Update Firestore if logged in
-    if (currentUser) {
-      try {
-        await addToWishlist(currentUser.uid, wishlistProduct);
-      } catch (error) {
-        console.error("Error adding to wishlist in Firestore:", error);
-        // Revert state on error
-        setWishlistItems(prev => prev.filter(item => item.id !== product.id));
+    if (!wishlistItems.some(item => item.id === product.id)) {
+      const updatedWishlist = [...wishlistItems, product];
+      setWishlistItems(updatedWishlist);
+      
+      if (currentUser) {
+        try {
+          await addToWishlist(currentUser.uid, product);
+        } catch (error) {
+          console.error("Error adding to wishlist:", error);
+        }
       }
     }
   };
 
   const removeFromWishlistHandler = async (productId) => {
-    // Update state immediately for better UX
-    setWishlistItems(prev => prev.filter(item => item.id !== productId));
+    const updatedWishlist = wishlistItems.filter(item => item.id !== productId);
+    setWishlistItems(updatedWishlist);
     
-    // Update Firestore if logged in
     if (currentUser) {
       try {
         await removeFromWishlist(currentUser.uid, productId);
       } catch (error) {
-        console.error("Error removing from wishlist in Firestore:", error);
-        // If error, reload wishlist to sync with server
-        const wishlistData = await getWishlist(currentUser.uid);
-        setWishlistItems(wishlistData || []);
+        console.error("Error removing from wishlist:", error);
       }
     }
-  };
-
-  const isInWishlist = (productId) => {
-    return wishlistItems.some(item => item.id === productId);
   };
 
   const moveToCart = async (productId) => {
     const item = wishlistItems.find(item => item.id === productId);
     if (item) {
-      await addToCart({...item, quantity: 1});
+      await addToCart(item);
       await removeFromWishlistHandler(productId);
     }
   };
 
   const moveAllToCart = async () => {
     for (const item of wishlistItems) {
-      await addToCart({...item, quantity: 1});
+      await addToCart(item);
     }
-    // Clear wishlist
     setWishlistItems([]);
     if (currentUser) {
-      try {
-        // In a real implementation, this would be a batch operation
-        for (const item of wishlistItems) {
-          await removeFromWishlist(currentUser.uid, item.id);
-        }
-      } catch (error) {
-        console.error("Error moving all items to cart:", error);
-      }
+      // Clear wishlist in Firestore
     }
   };
 
+  const value = {
+    cartItems,
+    cartTotal,
+    itemCount,
+    loading,
+    wishlistItems,
+    wishlistLoading,
+    addToCart,
+    removeFromCart,
+    updateQuantity,
+    clearCart,
+    addToWishlist: addToWishlistHandler,
+    removeFromWishlist: removeFromWishlistHandler,
+    moveToCart,
+    moveAllToCart
+  };
+
   return (
-    <CartContext.Provider
-      value={{
-        cartItems,
-        addToCart,
-        removeFromCart,
-        updateQuantity,
-        clearCart,
-        itemCount,
-        cartTotal,
-        wishlistItems,
-        addToWishlist: addToWishlistHandler,
-        removeFromWishlist: removeFromWishlistHandler,
-        isInWishlist,
-        moveToCart,
-        moveAllToCart,
-        loading,
-        wishlistLoading
-      }}
-    >
+    <CartContext.Provider value={value}>
       {children}
     </CartContext.Provider>
   );
 };
 
-export const useCart = () => useContext(CartContext); 
+export default CartProvider; 

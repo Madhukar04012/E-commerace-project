@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { useReviews } from '../context/ReviewContext';
-import { useAuth } from '../context/AuthContext';
+import { useReview } from '../hooks/useReview';
+import { useAuth } from '../hooks/useAuth';
 
 export default function ReviewForm({ productId, onSuccess }) {
-  const { addReview } = useReviews();
+  const { addReview } = useReview();
   const { currentUser } = useAuth();
   const [formData, setFormData] = useState({
     rating: 5,

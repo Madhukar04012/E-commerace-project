@@ -1,90 +1,147 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
-import { useCart } from "../context/CartContext";
-import { useReviews } from "../context/ReviewContext";
+import { useCart } from "../hooks/useCart";
+import { useReview } from "../hooks/useReview";
 import mockProducts from "../data/mockProducts";
 import StarRating from "../components/StarRating";
 import ReviewForm from "../components/ReviewForm";
 import ReviewList from "../components/ReviewList";
-import WishlistButton from "../components/WishlistButton";
 
 export default function ProductDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { addToCart, cartItems, updateQuantity } = useCart();
-  const { getProductReviews, getAverageRating } = useReviews();
+  const { addToCart, cartItems, updateQuantity, isInWishlist, addToWishlist, removeFromWishlist } = useCart();
+  const { getProductReviews, getAverageRating } = useReview();
   const [quantity, setQuantity] = useState(1);
   const [productData, setProductData] = useState(null);
   const [activeTab, setActiveTab] = useState('description');
-  const [wishlist, setWishlist] = useState(() => {
-    const saved = localStorage.getItem('wishlist');
-    return saved ? JSON.parse(saved) : [];
-  });
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   
   // Find the product by ID from our data
   useEffect(() => {
-    const foundProduct = mockProducts.find(p => p.id === parseInt(id) || p.id === id);
-    
-    if (foundProduct) {
-      setProductData(foundProduct);
+    try {
+      setLoading(true);
+      const foundProduct = mockProducts.find(p => p.id === id || p.id.toString() === id);
       
-      // Check if this product is in cart already, set initial quantity
-      const cartItem = cartItems.find(item => item.id === id);
-      if (cartItem) {
-        setQuantity(cartItem.quantity);
+      if (foundProduct) {
+        setProductData(foundProduct);
+        
+        // Check if this product is in cart already, set initial quantity
+        const cartItem = cartItems.find(item => item.id === id);
+        if (cartItem) {
+          setQuantity(cartItem.quantity);
+        }
+      } else {
+        // If no product found, set error
+        setError("Product not found");
+        // Optionally navigate away after a delay
+        setTimeout(() => navigate("/shop"), 3000);
       }
-    } else {
-      navigate("/");
+    } catch (err) {
+      console.error("Error loading product:", err);
+      setError("Failed to load product details");
+    } finally {
+      setLoading(false);
     }
   }, [id, navigate, cartItems]);
   
-  useEffect(() => {
-    localStorage.setItem('wishlist', JSON.stringify(wishlist));
-  }, [wishlist]);
+  // Show loading state
+  if (loading) {
+    return (
+      <div className="container mx-auto p-4 flex justify-center items-center min-h-[400px]">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+      </div>
+    );
+  }
   
-  if (!productData) return null;
+  // Show error state
+  if (error || !productData) {
+    return (
+      <div className="container mx-auto p-4 text-center">
+        <div className="bg-red-50 border border-red-200 rounded-md p-6 max-w-md mx-auto">
+          <svg className="w-12 h-12 text-red-500 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+          </svg>
+          <h2 className="text-xl font-bold text-gray-800 mb-2">{error || "Product Not Found"}</h2>
+          <p className="text-gray-600 mb-4">We couldn't find the product you're looking for.</p>
+          <Link to="/shop" className="inline-block bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded transition-colors">
+            Back to Shop
+          </Link>
+        </div>
+      </div>
+    );
+  }
   
   const productId = productData.id.toString();
   const reviews = getProductReviews(productId);
   const averageRating = getAverageRating(productId);
   
   const handleAddToCart = () => {
-    addToCart({
-      id: productData.id,
-      name: productData.name,
-      price: productData.price,
-      image: productData.image,
-      quantity
-    });
-  };
-  
-  const handleBuyNow = () => {
-    addToCart({
-      id: productData.id,
-      name: productData.name,
-      price: productData.price,
-      image: productData.image,
-      quantity
-    });
-    navigate("/checkout");
-  };
-  
-  const handleQuantityChange = (e) => {
-    const newQuantity = parseInt(e.target.value);
-    setQuantity(newQuantity);
-    
-    // If product is already in cart, update quantity
-    const cartItem = cartItems.find(item => item.id === id);
-    if (cartItem) {
-      updateQuantity(id, newQuantity);
+    try {
+      addToCart({
+        id: productData.id,
+        name: productData.name,
+        price: productData.price,
+        image: productData.image,
+        quantity
+      });
+    } catch (err) {
+      console.error("Error adding to cart:", err);
+      alert("Failed to add item to cart. Please try again.");
     }
   };
   
-  const toggleWishlist = () => {
-    if (wishlist.includes(productData.id)) {
-      setWishlist(wishlist.filter(id => id !== productData.id));
-    } else {
-      setWishlist([...wishlist, productData.id]);
+  const handleBuyNow = () => {
+    try {
+      addToCart({
+        id: productData.id,
+        name: productData.name,
+        price: productData.price,
+        image: productData.image,
+        quantity
+      });
+      navigate("/checkout");
+    } catch (err) {
+      console.error("Error processing buy now:", err);
+      alert("Failed to process your purchase. Please try again.");
+    }
+  };
+  
+  const handleQuantityChange = (e) => {
+    try {
+      const newQuantity = parseInt(e.target.value);
+      if (isNaN(newQuantity) || newQuantity < 1) return;
+      
+      setQuantity(newQuantity);
+      
+      // If product is already in cart, update quantity
+      const cartItem = cartItems.find(item => item.id === id);
+      if (cartItem) {
+        updateQuantity(id, newQuantity);
+      }
+    } catch (err) {
+      console.error("Error updating quantity:", err);
+    }
+  };
+  
+  const handleToggleWishlist = () => {
+    try {
+      const inWishlist = isInWishlist(productData.id);
+      
+      if (inWishlist) {
+        removeFromWishlist(productData.id);
+      } else {
+        addToWishlist({
+          id: productData.id,
+          name: productData.name,
+          price: productData.price,
+          image: productData.image,
+          description: productData.description
+        });
+      }
+    } catch (err) {
+      console.error("Error updating wishlist:", err);
     }
   };
   
@@ -108,6 +165,10 @@ export default function ProductDetail() {
             src={productData.image} 
             alt={productData.name} 
             className="w-full h-auto object-cover rounded-lg shadow-md" 
+            onError={(e) => {
+              e.target.onerror = null;
+              e.target.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200' viewBox='0 0 200 200'%3E%3Crect width='200' height='200' fill='%23f3f4f6'/%3E%3Ctext x='50%25' y='50%25' text-anchor='middle' dy='.3em' font-family='Arial' font-size='24' fill='%239ca3af'%3ENo Image%3C/text%3E%3C/svg%3E";
+            }}
           />
         </div>
 
@@ -117,9 +178,9 @@ export default function ProductDetail() {
           
           <div className="flex items-center mb-2">
             <div className="flex mr-2">
-              {renderStars(averageRating || productData.ratings?.average || 0)}
+              {renderStars(averageRating || productData.rating || 0)}
             </div>
-            <span className="text-gray-600">({reviews.length || productData.ratings?.count || 0} reviews)</span>
+            <span className="text-gray-600">({reviews.length || productData.numReviews || 0} reviews)</span>
           </div>
           
           <p className="text-2xl font-semibold text-blue-600 mb-4">
@@ -166,10 +227,11 @@ export default function ProductDetail() {
             </button>
             
             <button 
-              onClick={toggleWishlist} 
+              onClick={handleToggleWishlist} 
               className="p-3 rounded-md border border-gray-300 text-gray-700 hover:bg-gray-50"
+              aria-label={isInWishlist(productData.id) ? "Remove from wishlist" : "Add to wishlist"}
             >
-              {wishlist.includes(productData.id) ? (
+              {isInWishlist(productData.id) ? (
                 <svg 
                   className="w-6 h-6 text-red-500 fill-current" 
                   xmlns="http://www.w3.org/2000/svg" 
@@ -233,7 +295,19 @@ export default function ProductDetail() {
         <div className="py-6">
           {activeTab === 'description' ? (
             <div className="prose max-w-none">
-              <p>{productData.description}</p>
+              {productData.features && productData.features.length > 0 ? (
+                <>
+                  <p>{productData.description}</p>
+                  <h3 className="text-lg font-medium mt-4 mb-2">Key Features</h3>
+                  <ul className="list-disc pl-5 space-y-1">
+                    {productData.features.map((feature, index) => (
+                      <li key={index}>{feature}</li>
+                    ))}
+                  </ul>
+                </>
+              ) : (
+                <p>{productData.description}</p>
+              )}
             </div>
           ) : (
             <div>

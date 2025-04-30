@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { useAdmin } from '../../context/AdminContext';
-import { useAuth } from '../../context/AuthContext';
+import { useAdmin } from '../../hooks/useAdmin';
+import { useAuth } from '../../hooks/useAuth';
+import { handleImageError } from "../../utils/imageFallback";
 
 export default function AdminProducts() {
   const { isAdmin, products, deleteProduct } = useAdmin();
@@ -182,9 +183,7 @@ export default function AdminProducts() {
                         src={product.image}
                         alt={product.name}
                         className="h-full w-full object-cover"
-                        onError={(e) => {
-                          e.target.src = "https://via.placeholder.com/150";
-                        }}
+                        onError={(e) => handleImageError(e, 'small')}
                       />
                     </div>
                   </td>

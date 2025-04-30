@@ -2,6 +2,121 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Import custom animation styles */
+@import './assets/styles/animations.css';
+
+/* Global smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+/* Dark mode styles */
+.dark {
+  color: #f3f4f6;
+  color-scheme: dark;
+  background: linear-gradient(to bottom, #0f172a, #1a202c);
+}
+
+/* Dark mode specific colors */
+.dark body {
+  background: linear-gradient(to bottom, #0f172a, #1a202c);
+  color: #f3f4f6;
+}
+
+.dark .bg-white {
+  background: linear-gradient(170deg, #2d3748, #1e293b);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+}
+
+.dark .bg-gray-50,
+.dark .bg-gray-100 {
+  background: linear-gradient(170deg, #2d3748 0%, #1e293b 100%);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+}
+
+.dark .bg-gray-200 {
+  background-color: #374151; /* bg-gray-700 */
+}
+
+.dark .text-gray-900 {
+  color: #f3f4f6; /* text-gray-100 */
+}
+
+.dark .text-gray-800 {
+  color: #e5e7eb; /* text-gray-200 */
+}
+
+.dark .text-gray-700 {
+  color: #d1d5db; /* text-gray-300 */
+}
+
+.dark .text-gray-600 {
+  color: #9ca3af; /* text-gray-400 */
+}
+
+/* Fix for circular dependency - use direct color instead of @apply */
+.dark .text-gray-500 {
+  color: #6b7280; /* text-gray-500 */
+}
+
+.dark .border-gray-200 {
+  border-color: rgba(55, 65, 81, 0.6); /* border-gray-700 with opacity */
+}
+
+.dark .border-gray-300 {
+  border-color: rgba(75, 85, 99, 0.6); /* border-gray-600 with opacity */
+}
+
+.dark .shadow-md,
+.dark .shadow-lg,
+.dark .shadow-xl {
+  --tw-shadow-color: rgba(0, 0, 0, 0.7);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -4px rgba(0, 0, 0, 0.4);
+}
+
+/* Dark mode for primary elements */
+.dark .primary-button {
+  background-color: #2563eb; /* bg-blue-600 */
+  box-shadow: 0 0 15px rgba(37, 99, 235, 0.5);
+  transition: all 0.3s ease;
+}
+
+.dark .primary-button:hover {
+  background-color: #1d4ed8; /* bg-blue-700 */
+  box-shadow: 0 0 20px rgba(37, 99, 235, 0.8);
+  transform: translateY(-2px);
+}
+
+/* Dark mode cards and surfaces */
+.dark .product-card {
+  background: linear-gradient(145deg, #1e293b, #1a202c);
+  border: 1px solid rgba(55, 65, 81, 0.5); /* border-gray-700 with opacity */
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+}
+
+.dark .product-card:hover {
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.6), 0 0 15px rgba(79, 70, 229, 0.3);
+  border-color: rgba(139, 92, 246, 0.3); /* border-secondary-500 with opacity */
+}
+
+/* Dark mode links */
+.dark .hover-link {
+  color: #60a5fa; /* text-blue-400 */
+  transition: all 0.2s;
+  text-shadow: 0 0 10px rgba(96, 165, 250, 0.1);
+}
+
+.dark .hover-link:hover {
+  color: #93c5fd; /* text-blue-300 */
+  text-shadow: 0 0 10px rgba(96, 165, 250, 0.4);
+}
+
 /* 3D Perspective Styles */
 .perspective-1000 {
   perspective: 1000px;
@@ -55,16 +170,18 @@
 }
 
 .hero-button-primary {
-  @apply bg-white text-indigo-600 font-semibold rounded-full px-8 py-4 hover:bg-indigo-100 transition-all duration-300 shadow-lg;
+  @apply bg-indigo-700 text-gray-100 hover:bg-indigo-600;
+  box-shadow: 0 0 15px rgba(79, 70, 229, 0.3);
 }
 
 .hero-button-secondary {
-  @apply border-2 border-white text-white font-semibold rounded-full px-8 py-4 hover:bg-white hover:text-indigo-600 transition-all duration-300;
+  @apply border-2 border-indigo-500 text-indigo-300 hover:bg-indigo-800 hover:text-gray-100;
 }
 
 /* Card Hover Effects */
 .category-card {
-  @apply bg-white rounded-lg shadow-md transition-all duration-300;
+  @apply bg-gray-800 border border-gray-700;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2), 0 2px 4px -1px rgba(0, 0, 0, 0.1);
 }
 
 .category-card:hover {
@@ -110,7 +227,7 @@
 .primary-button {
   @apply bg-blue-600 text-white px-6 py-2 rounded-full font-semibold 
          transition-all duration-300 transform hover:scale-105 hover:bg-blue-700 
-         active:scale-95 shadow-md hover:shadow-lg;
+         active:scale-95 shadow-md hover:shadow-lg cursor-pointer min-h-[44px];
 }
 
 /* Custom Scrollbar */
@@ -127,6 +244,19 @@
   @apply bg-gray-400 rounded-full hover:bg-gray-500;
 }
 
+/* Dark mode scrollbar */
+.dark ::-webkit-scrollbar-track {
+  background-color: #1f2937; /* bg-gray-800 */
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background-color: #4b5563; /* bg-gray-600 */
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background-color: #6b7280; /* bg-gray-500 */
+}
+
 /* Animation Utilities */
 .hover-lift {
   @apply transition-transform duration-300 hover:-translate-y-1;
@@ -138,4 +268,135 @@
 
 .hover-shadow {
   @apply transition-shadow duration-300 hover:shadow-lg;
+}
+
+/* Standardized text styles for better consistency */
+.section-heading {
+  @apply text-3xl font-extrabold mb-6 text-gray-900;
+}
+
+.section-subheading {
+  @apply text-xl font-semibold mb-4 text-gray-800;
+}
+
+.section-description {
+  @apply text-gray-600 mb-8 max-w-3xl;
+}
+
+/* Accessibility improvements */
+.sr-only {
+  @apply absolute w-px h-px p-0 -m-px overflow-hidden whitespace-nowrap border-0;
+}
+
+.focus-outline {
+  @apply focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50;
+}
+
+/* Make tap targets large enough */
+.tap-target {
+  @apply min-h-[44px] min-w-[44px];
+}
+
+/* Add proper contrast for text */
+.text-contrast-high {
+  @apply text-gray-900;
+}
+
+.text-contrast-medium {
+  @apply text-gray-700;
+}
+
+.text-contrast-low {
+  @apply text-gray-500;
+}
+
+/* Dark mode text contrast */
+.dark .text-contrast-high {
+  color: #f3f4f6; /* text-gray-100 */
+}
+
+.dark .text-contrast-medium {
+  color: #d1d5db; /* text-gray-300 */
+}
+
+/* Fix for circular dependency - use direct color instead of @apply */
+.dark .text-contrast-low {
+  color: #6b7280; /* text-gray-500 */
+}
+
+/* Ensure proper spacing on mobile */
+.mobile-container {
+  @apply px-4 md:px-6 lg:px-8;
+}
+
+/* Dark mode specific nav styles */
+.dark nav {
+  background: rgba(17, 24, 39, 0.8);
+  backdrop-filter: blur(8px);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  border-bottom: 1px solid rgba(75, 85, 99, 0.2);
+}
+
+/* Form elements in dark mode */
+.dark input, 
+.dark select, 
+.dark textarea {
+  background-color: #1f2937; /* bg-gray-800 */
+  border-color: #4b5563; /* border-gray-600 */
+  color: #f3f4f6; /* text-gray-100 */
+}
+
+.dark input::placeholder {
+  color: #6b7280; /* text-gray-500 */
+}
+
+/* User menu in dark mode */
+.dark .dropdown-menu {
+  background-color: #1f2937; /* bg-gray-800 */
+  border: 1px solid #374151; /* border-gray-700 */
+}
+
+/* Button styling for dark mode */
+.dark button {
+  transition: colors 0.2s;
+}
+
+.dark .btn-light {
+  background-color: #374151; /* bg-gray-700 */
+  color: #f3f4f6; /* text-gray-100 */
+}
+
+.dark .btn-light:hover {
+  background-color: #4b5563; /* bg-gray-600 */
+}
+
+/* Link styling for dark mode */
+.dark a {
+  @apply transition-colors duration-200;
+}
+
+/* Modal styling for dark mode */
+.dark .modal-content {
+  @apply bg-gray-800 border-gray-700;
+}
+
+/* Table styling for dark mode */
+.dark table {
+  @apply border-gray-700;
+}
+
+.dark th {
+  @apply bg-gray-800 text-gray-300;
+}
+
+.dark td {
+  @apply border-gray-700;
+}
+
+.dark tr:nth-child(even) {
+  @apply bg-gray-800;
+}
+
+.dark tr:hover {
+  @apply bg-gray-700;
 }

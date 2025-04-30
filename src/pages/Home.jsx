@@ -1,7 +1,7 @@
 // src/pages/Home.jsx
 import React from 'react';
 import Hero from '../components/Hero';
-import FlashDeals from '../components/FlashDeals';
+import FlashSale from '../components/FlashSale';
 import Categories from '../components/Categories';
 import FeaturedProducts from '../components/FeaturedProducts';
 import SummerSale from '../components/SummerSale';
@@ -17,9 +17,9 @@ const Home = () => {
         <SummerSale />
       </div>
       
-      {/* Flash Deals Section */}
+      {/* Flash Sale Section */}
       <div className="py-8">
-        <FlashDeals />
+        <FlashSale />
       </div>
       
       {/* Categories Section */}

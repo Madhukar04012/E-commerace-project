@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import { useReviews } from '../context/ReviewContext';
-import { useAuth } from '../context/AuthContext';
+import { useReview } from '../hooks/useReview';
+import { useAuth } from '../hooks/useAuth';
 import StarRating from './StarRating';
 
 export default function ReviewList({ productId }) {
-  const { getProductReviews, deleteReview } = useReviews();
+  const { getProductReviews, deleteReview } = useReview();
   const { currentUser } = useAuth();
   const [sortBy, setSortBy] = useState('newest');
   

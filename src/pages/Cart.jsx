@@ -1,6 +1,7 @@
-import { useCart } from "../context/CartContext";
+import { useCart } from "../hooks/useCart";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { handleImageError } from "../utils/imageFallback";
 
 const Cart = () => {
   const { cartItems, removeFromCart, updateQuantity, cartTotal, clearCart } = useCart();
@@ -36,9 +37,7 @@ const Cart = () => {
                   src={item.image} 
                   alt={item.name} 
                   className="w-16 h-16 object-cover rounded"
-                  onError={(e) => {
-                    e.target.src = "https://via.placeholder.com/64x64?text=No+Image";
-                  }}
+                  onError={(e) => handleImageError(e, 'small')}
                 />
                 <div>
                   <h2 className="text-lg font-semibold">{item.name}</h2>

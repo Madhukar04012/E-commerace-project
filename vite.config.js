@@ -15,8 +15,7 @@ export default defineConfig({
             'framer-motion',
             '@emotion/react',
             '@emotion/styled',
-            '@mui/material',
-            'firebase'
+            '@mui/material'
           ],
           utils: [
             'lodash',
@@ -27,6 +26,14 @@ export default defineConfig({
         }
       }
     },
-    chunkSizeWarningLimit: 1000
+    chunkSizeWarningLimit: 1000,
+    commonjsOptions: {
+      esmExternals: true
+    }
+  },
+  optimizeDeps: {
+    esbuildOptions: {
+      target: 'es2020'
+    }
   }
 })

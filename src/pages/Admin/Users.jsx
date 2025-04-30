@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { useAdmin } from '../../context/AdminContext';
-import { useAuth } from '../../context/AuthContext';
+import { useAdmin } from '../../hooks/useAdmin';
+import { useAuth } from '../../hooks/useAuth';
 
 export default function AdminUsers() {
   const { isAdmin, users, updateUserRole } = useAdmin();

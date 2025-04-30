@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { useAdmin } from '../../context/AdminContext';
-import { useAuth } from '../../context/AuthContext';
+import { useAdmin } from '../../hooks/useAdmin';
+import { useAuth } from '../../hooks/useAuth';
 
 export default function Dashboard() {
   const { isAdmin, stats, updateStats } = useAdmin();

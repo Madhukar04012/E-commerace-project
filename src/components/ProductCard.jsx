@@ -1,8 +1,9 @@
 // src/components/ProductCard.jsx
-import { useCart } from "../context/CartContext";
+import { useCart } from "../hooks/useCart";
 import { Link } from "react-router-dom";
 import StarRating from "./StarRating";
 import WishlistButton from "./WishlistButton";
+import { DEFAULT_FALLBACK_IMAGE, handleImageError } from "../utils/imageFallback";
 
 export default function ProductCard({ product }) {
   const { addToCart } = useCart();
@@ -29,7 +30,7 @@ export default function ProductCard({ product }) {
   const rating = product.ratings?.average || product.rating || 0;
   const reviewCount = product.ratings?.count || product.numReviews || 0;
   const price = Number(product.price) || 0;
-  const image = product.image || "https://via.placeholder.com/300x200?text=No+Image";
+  const image = product.image || DEFAULT_FALLBACK_IMAGE;
   const name = product.name || "Unnamed Product";
   const description = product.description || "No description available";
 
@@ -41,9 +42,7 @@ export default function ProductCard({ product }) {
             src={image} 
             alt={name} 
             className="w-full h-48 object-cover"
-            onError={(e) => {
-              e.target.src = "https://via.placeholder.com/300x200?text=No+Image";
-            }}
+            onError={handleImageError}
           />
           <div className="absolute top-2 right-2">
             <WishlistButton product={product} />
