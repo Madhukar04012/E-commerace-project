@@ -178,6 +178,26 @@ The project is set up for continuous deployment to Firebase Hosting:
 - Social sharing features
 - Customer support chat
 
+## Product Image Generation and Management
+
+The project includes tools for generating and managing product images:
+
+- AI-powered product image generation using prompt templates
+- Automatic placeholder image generation
+- Image processing scripts for optimization
+- Product image organization and categorization
+
+### Image Generation Scripts
+
+Located in the `/scripts` directory:
+
+- `generate-product-images.cjs` - Generate AI product images using prompts
+- `process-product-images.cjs` - Process and optimize product images
+- `download-placeholder-images.js` - Download placeholder images for products
+
+For more details on AI image generation, see [AI-IMAGE-GENERATION.md](AI-IMAGE-GENERATION.md).
+For more details on product image management, see [PRODUCT_IMAGES.md](PRODUCT_IMAGES.md).
+
 ## Contributing
 
 1. Fork the repository
