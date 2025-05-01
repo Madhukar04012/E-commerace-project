@@ -7,7 +7,6 @@ import Recommendations from '../components/Recommendations';
 import Brands from '../components/Brands';
 import AnimatedSection, { AnimatedHeading, AnimatedText } from '../components/AnimatedSection';
 import SEO from '../components/SEO';
-import { useToast } from '../context/ToastContext';
 
 // Stagger delay for animations
 const containerVariants = {
@@ -21,20 +20,6 @@ const containerVariants = {
 };
 
 const Landing = () => {
-  const toast = useToast();
-
-  // Welcome toast when page loads
-  React.useEffect(() => {
-    // Only show welcome toast once per session
-    const hasShownWelcome = sessionStorage.getItem('hasShownWelcome');
-    if (!hasShownWelcome) {
-      setTimeout(() => {
-        toast.success('Welcome to StyleShop! Explore our latest collections.');
-        sessionStorage.setItem('hasShownWelcome', 'true');
-      }, 1000);
-    }
-  }, [toast]);
-
   return (
     <>
       <SEO 

@@ -3,40 +3,49 @@ import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 
 const SummerSale = () => {
-  const [timeLeft, setTimeLeft] = useState('');
-  // Set end date to 3 days from component mount
-  const [endDate] = useState(() => {
-    const date = new Date();
-    date.setDate(date.getDate() + 3);
-    return date;
+  const [timeLeft, setTimeLeft] = useState({
+    days: 2,
+    hours: 23,
+    minutes: 58,
+    seconds: 30
   });
 
   useEffect(() => {
     const timer = setInterval(() => {
-      const now = new Date();
-      const difference = endDate - now;
-      
-      // Check if the end date has passed
-      if (difference <= 0) {
-        setTimeLeft('0d 0h 0m 0s');
-        clearInterval(timer);
-        return;
-      }
-      
-      // Calculate time units (only for positive difference)
-      const days = Math.floor(difference / (1000 * 60 * 60 * 24));
-      const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-      const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
-      const seconds = Math.floor((difference % (1000 * 60)) / 1000);
-      
-      setTimeLeft(`${days}d ${hours}h ${minutes}m ${seconds}s`);
+      setTimeLeft(prevTime => {
+        let { days, hours, minutes, seconds } = prevTime;
+        
+        if (seconds > 0) {
+          seconds -= 1;
+        } else {
+          seconds = 59;
+          if (minutes > 0) {
+            minutes -= 1;
+          } else {
+            minutes = 59;
+            if (hours > 0) {
+              hours -= 1;
+            } else {
+              hours = 23;
+              if (days > 0) {
+                days -= 1;
+              } else {
+                // Sale ended
+                clearInterval(timer);
+              }
+            }
+          }
+        }
+        
+        return { days, hours, minutes, seconds };
+      });
     }, 1000);
-
+    
     return () => clearInterval(timer);
-  }, [endDate]);
+  }, []);
 
   return (
-    <section className="relative overflow-hidden bg-gradient-to-r from-yellow-400 via-orange-500 to-red-500">
+    <section className="relative overflow-hidden bg-gradient-to-r from-purple-600 to-indigo-700">
       {/* Background Pattern */}
       <div className="absolute inset-0 opacity-20">
         {[...Array(20)].map((_, i) => (
@@ -71,22 +80,22 @@ const SummerSale = () => {
             </p>
             
             {/* Countdown Timer */}
-            <div className="flex gap-4 mb-8">
-              <div className="bg-white/20 backdrop-blur-sm rounded-lg p-4 text-center min-w-[100px]">
-                <div className="text-3xl font-bold font-mono">{timeLeft.split(' ')[0]}</div>
-                <div className="text-sm">Days</div>
+            <div className="grid grid-cols-4 gap-3 mb-6">
+              <div className="bg-white bg-opacity-20 rounded-lg p-3 text-center">
+                <div className="text-2xl font-bold">{timeLeft.days}d</div>
+                <div className="text-xs uppercase tracking-wide">Days</div>
               </div>
-              <div className="bg-white/20 backdrop-blur-sm rounded-lg p-4 text-center min-w-[100px]">
-                <div className="text-3xl font-bold font-mono">{timeLeft.split(' ')[1]}</div>
-                <div className="text-sm">Hours</div>
+              <div className="bg-white bg-opacity-20 rounded-lg p-3 text-center">
+                <div className="text-2xl font-bold">{timeLeft.hours}h</div>
+                <div className="text-xs uppercase tracking-wide">Hours</div>
               </div>
-              <div className="bg-white/20 backdrop-blur-sm rounded-lg p-4 text-center min-w-[100px]">
-                <div className="text-3xl font-bold font-mono">{timeLeft.split(' ')[2]}</div>
-                <div className="text-sm">Minutes</div>
+              <div className="bg-white bg-opacity-20 rounded-lg p-3 text-center">
+                <div className="text-2xl font-bold">{timeLeft.minutes}m</div>
+                <div className="text-xs uppercase tracking-wide">Minutes</div>
               </div>
-              <div className="bg-white/20 backdrop-blur-sm rounded-lg p-4 text-center min-w-[100px]">
-                <div className="text-3xl font-bold font-mono">{timeLeft.split(' ')[3]}</div>
-                <div className="text-sm">Seconds</div>
+              <div className="bg-white bg-opacity-20 rounded-lg p-3 text-center">
+                <div className="text-2xl font-bold">{timeLeft.seconds}s</div>
+                <div className="text-xs uppercase tracking-wide">Seconds</div>
               </div>
             </div>
 
@@ -96,22 +105,12 @@ const SummerSale = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 }}
             >
-              <Link to="/summer-sale">
-                <motion.button
-                  className="bg-white text-orange-600 px-8 py-3 rounded-full font-bold hover:bg-orange-50 transition-colors shadow-lg"
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  Shop Now
-                </motion.button>
+              <Link to="/shop" className="bg-white text-indigo-700 px-8 py-3 rounded-full font-bold hover:bg-indigo-100 transition-colors shadow-lg">
+                Shop Now
               </Link>
-              <motion.button
-                className="border-2 border-white text-white px-8 py-3 rounded-full font-bold hover:bg-white/10 transition-colors"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
+              <Link to="/category/electronics" className="border-2 border-white text-white px-8 py-3 rounded-full font-bold hover:bg-white/10 transition-colors">
                 Learn More
-              </motion.button>
+              </Link>
             </motion.div>
           </motion.div>
 

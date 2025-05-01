@@ -1,15 +1,8 @@
-import { createContext, useContext, useState, useCallback, useEffect } from "react";
+import { createContext, useState, useCallback, useEffect } from "react";
 import Fuse from "fuse.js";
 
-const SearchContext = createContext();
-
-export function useSearch() {
-  const context = useContext(SearchContext);
-  if (!context) {
-    throw new Error("useSearch must be used within a SearchProvider");
-  }
-  return context;
-}
+// Create the context
+const SearchContext = createContext(null);
 
 export function SearchProvider({ children, products = [] }) {
   const [searchQuery, setSearchQuery] = useState("");
@@ -143,4 +136,6 @@ export function SearchProvider({ children, products = [] }) {
   return (
     <SearchContext.Provider value={value}>{children}</SearchContext.Provider>
   );
-} 
+}
+
+export default SearchContext; 

@@ -1,9 +1,11 @@
-import React, { createContext, useState, useContext, useEffect } from 'react';
+import React, { createContext, useState, useEffect } from 'react';
 import { useAuth } from '../hooks/useAuth';
 import { getAdminStatus } from '../services/adminService';
 
-const AdminContext = createContext();
+// Create the context
+const AdminContext = createContext(null);
 
+// Create the provider component
 export const AdminProvider = ({ children }) => {
   const { user } = useAuth();
   const [isAdmin, setIsAdmin] = useState(false);
@@ -29,19 +31,14 @@ export const AdminProvider = ({ children }) => {
     checkAdminStatus();
   }, [user]);
 
+  const value = { isAdmin, loading };
+
   return (
-    <AdminContext.Provider value={{ isAdmin, loading }}>
+    <AdminContext.Provider value={value}>
       {children}
     </AdminContext.Provider>
   );
 };
 
-export const useAdmin = () => {
-  const context = useContext(AdminContext);
-  if (!context) {
-    throw new Error('useAdmin must be used within an AdminProvider');
-  }
-  return context;
-};
-
+// Export the context for direct use
 export default AdminContext; 

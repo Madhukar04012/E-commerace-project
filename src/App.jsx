@@ -5,6 +5,7 @@ import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import ErrorBoundary from "./components/ErrorBoundary";
 import ScrollToTop from "./components/ScrollToTop";
+import ProtectedRoute from "./components/ProtectedRoute";
 import { AuthProvider } from "./context/AuthContext";
 import { CartProvider } from "./context/CartContext";
 import { SearchProvider } from "./context/SearchContext";
@@ -34,6 +35,15 @@ const ProductDetail = lazy(() => import("./pages/ProductDetail"));
 const SearchResults = lazy(() => import("./pages/SearchResults"));
 const Wishlist = lazy(() => import("./pages/Wishlist"));
 const Landing = lazy(() => import("./pages/Landing"));
+const Profile = lazy(() => import("./pages/Profile"));
+
+// Category pages
+const Electronics = lazy(() => import("./pages/Electronics"));
+const Furniture = lazy(() => import("./pages/Furniture"));
+const Kitchen = lazy(() => import("./pages/Kitchen"));
+const Accessories = lazy(() => import("./pages/Accessories"));
+const Clothing = lazy(() => import("./pages/Clothing"));
+const Fitness = lazy(() => import("./pages/Fitness"));
 
 // Admin pages
 const AdminDashboard = lazy(() => import("./pages/Admin/Dashboard"));
@@ -76,34 +86,77 @@ function App() {
             <AdminProvider>
               <SearchProvider products={mockProducts}>
                 <ToastProvider>
-                  <div className="min-h-screen bg-gray-100 flex flex-col">
+                  <div className="min-h-screen flex flex-col bg-gray-100 dark:bg-gray-900 transition-colors duration-200">
                     <ErrorBoundary>
                       <Navbar />
                     </ErrorBoundary>
-                    <main className="container mx-auto px-4 py-8 pt-20 flex-grow">
+                    <main className="flex-grow pt-16">
                       <ErrorBoundary>
                         <Suspense fallback={<LoadingFallback />}>
-                          <Routes>
-                            <Route path="/" element={<Landing />} />
-                            <Route path="/home" element={<Home />} />
-                            <Route path="/shop" element={<Shop />} />
-                            <Route path="/about" element={<About />} />
-                            <Route path="/contact" element={<Contact />} />
-                            <Route path="/cart" element={<Cart />} />
-                            <Route path="/checkout" element={<Checkout />} />
-                            <Route path="/confirmation" element={<Confirmation />} />
-                            <Route path="/login" element={<Login />} />
-                            <Route path="/signup" element={<Signup />} />
-                            <Route path="/product/:id" element={<ProductDetail />} />
-                            <Route path="/search" element={<SearchResults />} />
-                            <Route path="/wishlist" element={<Wishlist />} />
-                            
-                            {/* Admin Routes */}
-                            <Route path="/admin" element={<AdminDashboard />} />
-                            <Route path="/admin/products" element={<AdminProducts />} />
-                            <Route path="/admin/orders" element={<AdminOrders />} />
-                            <Route path="/admin/users" element={<AdminUsers />} />
-                          </Routes>
+                          <div className="container mx-auto px-4 py-8">
+                            <Routes>
+                              <Route path="/" element={<Landing />} />
+                              <Route path="/home" element={<Home />} />
+                              <Route path="/shop" element={<Shop />} />
+                              <Route path="/about" element={<About />} />
+                              <Route path="/contact" element={<Contact />} />
+                              <Route path="/cart" element={<Cart />} />
+                              <Route path="/profile" element={
+                                <ProtectedRoute>
+                                  <Profile />
+                                </ProtectedRoute>
+                              } />
+                              <Route path="/checkout" element={
+                                <ProtectedRoute>
+                                  <Checkout />
+                                </ProtectedRoute>
+                              } />
+                              <Route path="/confirmation" element={
+                                <ProtectedRoute>
+                                  <Confirmation />
+                                </ProtectedRoute>
+                              } />
+                              <Route path="/login" element={<Login />} />
+                              <Route path="/signup" element={<Signup />} />
+                              <Route path="/product/:id" element={<ProductDetail />} />
+                              <Route path="/search" element={<SearchResults />} />
+                              <Route path="/wishlist" element={
+                                <ProtectedRoute>
+                                  <Wishlist />
+                                </ProtectedRoute>
+                              } />
+                              
+                              {/* Category Routes */}
+                              <Route path="/category/electronics" element={<Electronics />} />
+                              <Route path="/category/furniture" element={<Furniture />} />
+                              <Route path="/category/kitchen" element={<Kitchen />} />
+                              <Route path="/category/accessories" element={<Accessories />} />
+                              <Route path="/category/clothing" element={<Clothing />} />
+                              <Route path="/category/fitness" element={<Fitness />} />
+                              
+                              {/* Admin Routes */}
+                              <Route path="/admin" element={
+                                <ProtectedRoute>
+                                  <AdminDashboard />
+                                </ProtectedRoute>
+                              } />
+                              <Route path="/admin/products" element={
+                                <ProtectedRoute>
+                                  <AdminProducts />
+                                </ProtectedRoute>
+                              } />
+                              <Route path="/admin/orders" element={
+                                <ProtectedRoute>
+                                  <AdminOrders />
+                                </ProtectedRoute>
+                              } />
+                              <Route path="/admin/users" element={
+                                <ProtectedRoute>
+                                  <AdminUsers />
+                                </ProtectedRoute>
+                              } />
+                            </Routes>
+                          </div>
                         </Suspense>
                       </ErrorBoundary>
                     </main>

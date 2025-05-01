@@ -4,7 +4,9 @@ import {
   signInWithEmailAndPassword, 
   signOut, 
   onAuthStateChanged,
-  updateProfile
+  updateProfile,
+  GoogleAuthProvider,
+  signInWithPopup
 } from "firebase/auth";
 import { 
   doc, 
@@ -63,6 +65,37 @@ export function AuthProvider({ children }) {
       return userCredential.user;
     } catch (error) {
       console.error("Error during login:", error);
+      setError(error.message);
+      throw error;
+    }
+  }
+
+  // Google Sign In
+  async function signInWithGoogle() {
+    try {
+      const provider = new GoogleAuthProvider();
+      const result = await signInWithPopup(auth, provider);
+      const user = result.user;
+      
+      // Check if user document exists in Firestore
+      const userDoc = await getDoc(doc(db, "users", user.uid));
+      
+      // If not, create a new user document
+      if (!userDoc.exists()) {
+        await setDoc(doc(db, "users", user.uid), {
+          email: user.email,
+          displayName: user.displayName || '',
+          photoURL: user.photoURL || '',
+          createdAt: new Date().toISOString(),
+          role: 'customer',
+          wishlist: [],
+          addresses: []
+        });
+      }
+      
+      return user;
+    } catch (error) {
+      console.error("Error during Google sign in:", error);
       setError(error.message);
       throw error;
     }
@@ -170,6 +203,7 @@ export function AuthProvider({ children }) {
             const newUserProfile = {
               email: user.email,
               displayName: user.displayName || '',
+              photoURL: user.photoURL || '',
               createdAt: new Date().toISOString(),
               role: 'customer',
               wishlist: [],
@@ -198,6 +232,7 @@ export function AuthProvider({ children }) {
     signup,
     login,
     logout,
+    signInWithGoogle,
     addOrder,
     getUserOrders,
     updateOrderStatus

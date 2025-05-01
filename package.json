@@ -12,7 +12,10 @@
     "axe": "axe http://localhost:5173 --save ./accessibility-report.json",
     "analyze": "vite-bundle-analyzer",
     "optimize-images": "node scripts/image-optimizer.js",
-    "audit": "npm run lighthouse && npm run axe && npm run optimize-images"
+    "audit": "npm run lighthouse && npm run axe && npm run optimize-images",
+    "generate-image-prompts": "node scripts/generate-product-images.cjs",
+    "generate-placeholders": "node scripts/generate-product-images.cjs --placeholders",
+    "process-images": "node scripts/process-product-images.cjs --help"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",

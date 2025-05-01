@@ -3,19 +3,17 @@ import { useReview } from '../hooks/useReview';
 import { useAuth } from '../hooks/useAuth';
 import StarRating from './StarRating';
 
-export default function ReviewList({ productId }) {
-  const { getProductReviews, deleteReview } = useReview();
+export default function ReviewList({ reviews = [] }) {
+  const { removeReview } = useReview();
   const { currentUser } = useAuth();
   const [sortBy, setSortBy] = useState('newest');
-  
-  const reviews = getProductReviews(productId);
   
   // Sort reviews based on user selection
   const sortedReviews = [...reviews].sort((a, b) => {
     if (sortBy === 'newest') {
-      return new Date(b.date) - new Date(a.date);
+      return new Date(b.createdAt || b.date) - new Date(a.createdAt || a.date);
     } else if (sortBy === 'oldest') {
-      return new Date(a.date) - new Date(b.date);
+      return new Date(a.createdAt || a.date) - new Date(b.createdAt || b.date);
     } else if (sortBy === 'highest') {
       return b.rating - a.rating;
     } else if (sortBy === 'lowest') {
@@ -26,12 +24,13 @@ export default function ReviewList({ productId }) {
   
   const handleDelete = (reviewId) => {
     if (window.confirm('Are you sure you want to delete this review?')) {
-      deleteReview(productId, reviewId);
+      removeReview(reviewId);
     }
   };
   
   // Format date for display
   const formatDate = (dateString) => {
+    if (!dateString) return 'Unknown date';
     const options = { year: 'numeric', month: 'long', day: 'numeric' };
     return new Date(dateString).toLocaleDateString(undefined, options);
   };
@@ -70,10 +69,10 @@ export default function ReviewList({ productId }) {
             <div className="flex justify-between items-start">
               <div>
                 <StarRating rating={review.rating} size="sm" />
-                <h4 className="font-medium mt-2">{review.title}</h4>
+                <h4 className="font-medium mt-2">{review.title || 'Review'}</h4>
               </div>
               
-              {(currentUser?.id === review.userId || currentUser?.isAdmin) && (
+              {(currentUser?.uid === review.userId || currentUser?.isAdmin) && (
                 <button
                   onClick={() => handleDelete(review.id)}
                   className="text-red-500 text-sm hover:text-red-700"
@@ -84,16 +83,16 @@ export default function ReviewList({ productId }) {
             </div>
             
             <div className="flex items-center mt-2 text-sm text-gray-500">
-              <span className="font-medium">{review.username}</span>
+              <span className="font-medium">{review.userName || review.username || 'Anonymous'}</span>
               {review.verified && (
                 <span className="ml-2 text-green-600 text-xs border border-green-600 px-2 py-0.5 rounded-full">
                   Verified Buyer
                 </span>
               )}
-              <span className="ml-2">• {formatDate(review.date)}</span>
+              <span className="ml-2">• {formatDate(review.createdAt || review.date)}</span>
             </div>
             
-            <p className="mt-3 text-gray-700">{review.comment}</p>
+            <p className="mt-3 text-gray-700">{review.comment || review.text || ''}</p>
           </div>
         ))}
       </div>

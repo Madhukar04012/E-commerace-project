@@ -224,6 +224,11 @@ export const CartProvider = ({ children }) => {
     }
   };
 
+  // Check if an item is in the wishlist
+  const isInWishlist = (productId) => {
+    return wishlistItems.some(item => item.id === productId);
+  };
+
   const value = {
     cartItems,
     cartTotal,
@@ -238,7 +243,8 @@ export const CartProvider = ({ children }) => {
     addToWishlist: addToWishlistHandler,
     removeFromWishlist: removeFromWishlistHandler,
     moveToCart,
-    moveAllToCart
+    moveAllToCart,
+    isInWishlist
   };
 
   return (

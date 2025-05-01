@@ -1,97 +1,153 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useState, useEffect, useCallback } from 'react';
+import { useAuth } from '../hooks/useAuth';
+import { getReviews, addReview, updateReview, deleteReview } from '../services/reviewService';
 
-// Create and export the ReviewContext
-export const ReviewContext = createContext();
-
-export const useReviews = () => useContext(ReviewContext);
+// Create the context
+const ReviewContext = createContext(null);
 
 export const ReviewProvider = ({ children }) => {
-  const [reviews, setReviews] = useState({});
-  
-  // Load reviews from localStorage on mount
-  useEffect(() => {
-    const savedReviews = localStorage.getItem('productReviews');
-    if (savedReviews) {
-      setReviews(JSON.parse(savedReviews));
+  const { currentUser } = useAuth();
+  const [reviews, setReviews] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  // Load reviews
+  const loadReviews = useCallback(async (productId) => {
+    try {
+      setLoading(true);
+      const reviewData = await getReviews(productId);
+      setReviews(reviewData);
+      setError(null);
+    } catch (err) {
+      console.error("Error loading reviews:", err);
+      setError("Failed to load reviews");
+    } finally {
+      setLoading(false);
     }
   }, []);
-  
-  // Save reviews to localStorage whenever they change
-  useEffect(() => {
-    localStorage.setItem('productReviews', JSON.stringify(reviews));
-  }, [reviews]);
-  
+
   // Add a new review
-  const addReview = (productId, review) => {
-    const newReview = {
-      ...review,
-      id: Date.now(),
-      date: new Date().toISOString()
-    };
-    
-    setReviews(prevReviews => {
-      const productReviews = prevReviews[productId] || [];
-      return {
-        ...prevReviews,
-        [productId]: [...productReviews, newReview]
-      };
-    });
-  };
-  
-  // Edit an existing review
-  const editReview = (productId, reviewId, updatedReview) => {
-    setReviews(prevReviews => {
-      const productReviews = prevReviews[productId] || [];
-      const updatedReviews = productReviews.map(review => 
-        review.id === reviewId ? { ...review, ...updatedReview } : review
-      );
+  const createReview = useCallback(async (productId, reviewData) => {
+    if (!currentUser) {
+      setError("You must be logged in to submit a review");
+      return null;
+    }
+
+    try {
+      setLoading(true);
+      const newReview = await addReview(productId, {
+        ...reviewData,
+        userId: currentUser.uid,
+        userName: currentUser.displayName || "Anonymous User"
+      });
       
-      return {
-        ...prevReviews,
-        [productId]: updatedReviews
-      };
-    });
-  };
-  
-  // Delete a review
-  const deleteReview = (productId, reviewId) => {
-    setReviews(prevReviews => {
-      const productReviews = prevReviews[productId] || [];
-      const updatedReviews = productReviews.filter(review => review.id !== reviewId);
+      setReviews(prev => [...prev, newReview]);
+      setError(null);
+      return newReview;
+    } catch (err) {
+      console.error("Error adding review:", err);
+      setError("Failed to submit review");
+      return null;
+    } finally {
+      setLoading(false);
+    }
+  }, [currentUser]);
+
+  // Update an existing review
+  const editReview = useCallback(async (reviewId, reviewData) => {
+    if (!currentUser) {
+      setError("You must be logged in to edit a review");
+      return false;
+    }
+
+    try {
+      setLoading(true);
+      const success = await updateReview(reviewId, reviewData, currentUser.uid);
       
-      return {
-        ...prevReviews,
-        [productId]: updatedReviews
-      };
-    });
-  };
-  
-  // Get all reviews for a product
-  const getProductReviews = (productId) => {
-    return reviews[productId] || [];
-  };
-  
-  // Calculate average rating for a product
-  const getAverageRating = (productId) => {
-    const productReviews = reviews[productId] || [];
-    if (productReviews.length === 0) return 0;
+      if (success) {
+        setReviews(prev => 
+          prev.map(review => 
+            review.id === reviewId ? { ...review, ...reviewData, updatedAt: new Date() } : review
+          )
+        );
+        setError(null);
+      } else {
+        setError("You can only edit your own reviews");
+      }
+      
+      return success;
+    } catch (err) {
+      console.error("Error updating review:", err);
+      setError("Failed to update review");
+      return false;
+    } finally {
+      setLoading(false);
+    }
+  }, [currentUser]);
+
+  // Remove a review
+  const removeReview = useCallback(async (reviewId) => {
+    if (!currentUser) {
+      setError("You must be logged in to delete a review");
+      return false;
+    }
+
+    try {
+      setLoading(true);
+      const success = await deleteReview(reviewId, currentUser.uid);
+      
+      if (success) {
+        setReviews(prev => prev.filter(review => review.id !== reviewId));
+        setError(null);
+      } else {
+        setError("You can only delete your own reviews");
+      }
+      
+      return success;
+    } catch (err) {
+      console.error("Error deleting review:", err);
+      setError("Failed to delete review");
+      return false;
+    } finally {
+      setLoading(false);
+    }
+  }, [currentUser]);
+
+  // Check if user can review (hasn't reviewed this product yet)
+  const canReview = useCallback((productId) => {
+    if (!currentUser) return false;
     
-    const sum = productReviews.reduce((total, review) => total + review.rating, 0);
-    return sum / productReviews.length;
-  };
-  
+    return !reviews.some(review => 
+      review.userId === currentUser.uid && review.productId === productId
+    );
+  }, [currentUser, reviews]);
+
+  // Calculate average rating
+  const getAverageRating = useCallback(() => {
+    if (!reviews.length) return 0;
+    
+    const sum = reviews.reduce((acc, review) => acc + review.rating, 0);
+    return sum / reviews.length;
+  }, [reviews]);
+
+  // Value provided by the context
   const value = {
     reviews,
-    addReview,
+    loading,
+    error,
+    loadReviews,
+    createReview,
     editReview,
-    deleteReview,
-    getProductReviews,
+    removeReview,
+    canReview,
     getAverageRating
   };
-  
+
   return (
     <ReviewContext.Provider value={value}>
       {children}
     </ReviewContext.Provider>
   );
-}; 
+};
+
+export default ReviewContext; 

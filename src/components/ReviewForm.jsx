@@ -3,7 +3,7 @@ import { useReview } from '../hooks/useReview';
 import { useAuth } from '../hooks/useAuth';
 
 export default function ReviewForm({ productId, onSuccess }) {
-  const { addReview } = useReview();
+  const { createReview, canReview } = useReview();
   const { currentUser } = useAuth();
   const [formData, setFormData] = useState({
     rating: 5,
@@ -11,6 +11,7 @@ export default function ReviewForm({ productId, onSuccess }) {
     comment: ''
   });
   const [errors, setErrors] = useState({});
+  const [submitting, setSubmitting] = useState(false);
   
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -45,34 +46,73 @@ export default function ReviewForm({ productId, onSuccess }) {
     return Object.keys(newErrors).length === 0;
   };
   
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     
     if (!validateForm()) return;
     
-    const review = {
-      ...formData,
-      userId: currentUser?.id || 'anonymous',
-      username: currentUser?.name || 'Anonymous User',
-      verified: !!currentUser
-    };
+    if (!currentUser) {
+      setErrors({
+        auth: 'You must be logged in to submit a review'
+      });
+      return;
+    }
     
-    addReview(productId, review);
+    setSubmitting(true);
     
-    // Reset form
-    setFormData({
-      rating: 5,
-      title: '',
-      comment: ''
-    });
-    
-    // Call success callback if provided
-    if (onSuccess) onSuccess();
+    try {
+      const review = {
+        rating: formData.rating,
+        title: formData.title,
+        text: formData.comment,
+        verified: true
+      };
+      
+      await createReview(productId, review);
+      
+      // Reset form
+      setFormData({
+        rating: 5,
+        title: '',
+        comment: ''
+      });
+      
+      // Call success callback if provided
+      if (onSuccess) onSuccess();
+    } catch (error) {
+      setErrors({
+        submit: 'Failed to submit review. Please try again.'
+      });
+    } finally {
+      setSubmitting(false);
+    }
   };
+  
+  // If user has already reviewed, don't show the form
+  if (!canReview || !canReview(productId)) {
+    return (
+      <div className="bg-white p-6 rounded-lg shadow-md text-center">
+        <p className="text-gray-500">You've already reviewed this product.</p>
+      </div>
+    );
+  }
   
   return (
     <div className="bg-white p-6 rounded-lg shadow-md">
       <h3 className="text-lg font-medium mb-4">Write a Review</h3>
+      
+      {errors.auth && (
+        <div className="mb-4 p-3 bg-red-50 border border-red-300 text-red-700 rounded-md">
+          {errors.auth}
+        </div>
+      )}
+      
+      {errors.submit && (
+        <div className="mb-4 p-3 bg-red-50 border border-red-300 text-red-700 rounded-md">
+          {errors.submit}
+        </div>
+      )}
+      
       <form onSubmit={handleSubmit}>
         <div className="mb-4">
           <label className="block text-gray-700 mb-2">Rating</label>
@@ -118,9 +158,14 @@ export default function ReviewForm({ productId, onSuccess }) {
         
         <button
           type="submit"
-          className="bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition duration-200"
+          disabled={submitting}
+          className={`${
+            submitting 
+              ? 'bg-gray-400 cursor-not-allowed'
+              : 'bg-blue-600 hover:bg-blue-700'
+          } text-white py-2 px-4 rounded-md transition duration-200`}
         >
-          Submit Review
+          {submitting ? 'Submitting...' : 'Submit Review'}
         </button>
       </form>
     </div>

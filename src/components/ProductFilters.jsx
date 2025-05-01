@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useSearch } from "../context/SearchContext";
+import { useSearch } from "../hooks/useSearch";
 import { Slider } from "@mui/material";
 
 export default function ProductFilters() {

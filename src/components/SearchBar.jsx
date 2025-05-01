@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { useSearch } from "../context/SearchContext";
+import { useSearch } from "../hooks/useSearch";
 import { debounce } from "lodash";
 
 export default function SearchBar() {

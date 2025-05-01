@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 import { useCart } from "../hooks/useCart";
-import { useAdmin } from "../context/AdminContext";
+import { useAdmin } from "../hooks/useAdmin";
 import { Menu, X } from "lucide-react";
 import { useState } from "react";
 import SearchBar from "./SearchBar";
@@ -15,6 +15,7 @@ const Navbar = () => {
   const { isAdmin } = useAdmin();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  const [isCategoryMenuOpen, setIsCategoryMenuOpen] = useState(false);
   const { t } = useTranslation();
 
   const handleLogout = async () => {
@@ -24,6 +25,15 @@ const Navbar = () => {
       console.error("Failed to log out:", error);
     }
   };
+
+  const categories = [
+    { name: "Electronics", path: "/category/electronics" },
+    { name: "Furniture", path: "/category/furniture" },
+    { name: "Kitchen", path: "/category/kitchen" },
+    { name: "Accessories", path: "/category/accessories" },
+    { name: "Clothing", path: "/category/clothing" },
+    { name: "Fitness", path: "/category/fitness" },
+  ];
 
   return (
     <nav className="bg-white shadow-lg fixed w-full z-50 transition-colors duration-300 dark:bg-dark-500 dark:border-b dark:border-gray-700/40">
@@ -54,6 +64,45 @@ const Navbar = () => {
             >
               {t('nav.shop')}
             </Link>
+            
+            {/* Categories Dropdown */}
+            <div className="relative">
+              <button
+                onClick={() => setIsCategoryMenuOpen(!isCategoryMenuOpen)}
+                className="flex items-center text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium dark:text-gray-300 dark:hover:text-primary-400"
+              >
+                Categories
+                <svg
+                  className="h-5 w-5 ml-1"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M19 9l-7 7-7-7"
+                  />
+                </svg>
+              </button>
+
+              {isCategoryMenuOpen && (
+                <div className="absolute left-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50 dark:bg-gray-700">
+                  {categories.map((category) => (
+                    <Link
+                      key={category.path}
+                      to={category.path}
+                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-600"
+                      onClick={() => setIsCategoryMenuOpen(false)}
+                    >
+                      {category.name}
+                    </Link>
+                  ))}
+                </div>
+              )}
+            </div>
+            
             <Link
               to="/about"
               className="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium dark:text-gray-300 dark:hover:text-primary-400"
@@ -247,6 +296,24 @@ const Navbar = () => {
             >
               {t('nav.shop')}
             </Link>
+            
+            {/* Categories in Mobile Menu */}
+            <div className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 dark:text-gray-300">
+              <div>Categories</div>
+              <div className="pl-4 space-y-1 mt-1">
+                {categories.map((category) => (
+                  <Link
+                    key={category.path}
+                    to={category.path}
+                    className="block py-1 text-sm text-gray-600 hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-400"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    {category.name}
+                  </Link>
+                ))}
+              </div>
+            </div>
+            
             <Link
               to="/about"
               className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50 dark:text-gray-300 dark:hover:text-blue-400 dark:hover:bg-gray-700"

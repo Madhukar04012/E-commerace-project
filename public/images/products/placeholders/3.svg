@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="400" height="400" viewBox="0 0 400 400">
+    <rect width="400" height="400" fill="hsl(3, 70%, 65%)"/>
+    <text x="50%" y="50%" font-family="Arial, sans-serif" font-size="120" font-weight="bold" 
+          fill="white" text-anchor="middle" dominant-baseline="middle">EO</text>
+    <text x="50%" y="85%" font-family="Arial, sans-serif" font-size="24" 
+          fill="rgba(255,255,255,0.8)" text-anchor="middle">Placeholder</text>
+  </svg>

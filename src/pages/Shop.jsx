@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useSearch } from "../context/SearchContext";
+import { useSearch } from "../hooks/useSearch";
 import ProductCard from "../components/ProductCard";
 import ProductFilters from "../components/ProductFilters";
 import { useInView } from "react-intersection-observer";

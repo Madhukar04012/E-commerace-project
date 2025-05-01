@@ -63,7 +63,7 @@ export const useTheme = (defaultTheme = 'light') => {
   useEffect(() => {
     setMounted(true);
     applyTheme(theme);
-  }, []);
+  }, [theme]);
 
   // Detect system theme changes
   useEffect(() => {

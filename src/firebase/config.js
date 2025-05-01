@@ -4,12 +4,12 @@ import { getFirestore } from "firebase/firestore";
 
 // Firebase configuration
 const firebaseConfig = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY || "AIzaSyBj6U4z5YgxMj0fAQQZ-0m0-O-MHdLQoXk",
-  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || "styleshop-demo.firebaseapp.com",
-  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || "styleshop-demo",
-  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || "styleshop-demo.appspot.com",
-  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || "123456789012",
-  appId: import.meta.env.VITE_FIREBASE_APP_ID || "1:123456789012:web:abc123def456ghi789jkl"
+  apiKey: "AIzaSyBZBv5kWUTKt17owEg86U1_Z-CHtNzF_DM",
+  authDomain: "ecommerce-website-00001.firebaseapp.com",
+  projectId: "ecommerce-website-00001",
+  storageBucket: "ecommerce-website-00001.firebasestorage.app",
+  messagingSenderId: "131307342518",
+  appId: "1:131307342518:web:95d90f3c43dac4a4c63417"
 };
 
 let app;
