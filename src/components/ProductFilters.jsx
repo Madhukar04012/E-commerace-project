@@ -6,19 +6,56 @@ export default function ProductFilters() {
   const { filters, applyFilters, error, filteredProducts } = useSearch();
   const [localFilters, setLocalFilters] = useState(filters);
   const [categories, setCategories] = useState([]);
+  const [brands, setBrands] = useState([]);
+  const [ramOptions, setRamOptions] = useState([]);
+  const [storageOptions, setStorageOptions] = useState([]);
 
   // Update local filters when context filters change
   useEffect(() => {
     setLocalFilters(filters);
   }, [filters]);
 
-  // Get unique categories from products
+  // Get unique categories, brands, RAM, and storage options from products
   useEffect(() => {
     try {
       const uniqueCategories = [...new Set(filteredProducts.map(p => p.category))].filter(Boolean);
       setCategories(uniqueCategories);
+      
+      const uniqueBrands = [...new Set(filteredProducts.map(p => p.brand))].filter(Boolean);
+      setBrands(uniqueBrands);
+      
+      // Extract RAM options from specifications
+      const ramSet = new Set();
+      const storageSet = new Set();
+      filteredProducts.forEach(product => {
+        if (product.specifications?.ram) {
+          const ram = product.specifications.ram;
+          if (Array.isArray(ram)) {
+            ram.forEach(r => ramSet.add(r));
+          } else {
+            ramSet.add(ram);
+          }
+        }
+        if (product.specifications?.storage) {
+          const storage = product.specifications.storage;
+          if (Array.isArray(storage)) {
+            storage.forEach(s => storageSet.add(s));
+          } else {
+            storageSet.add(storage);
+          }
+        }
+        // Also check variants
+        if (product.variants) {
+          product.variants.forEach(variant => {
+            if (variant.ram) ramSet.add(variant.ram);
+            if (variant.storage) storageSet.add(variant.storage);
+          });
+        }
+      });
+      setRamOptions([...ramSet]);
+      setStorageOptions([...storageSet]);
     } catch (err) {
-      console.error("Error getting categories:", err);
+      console.error("Error getting filter options:", err);
     }
   }, [filteredProducts]);
 
@@ -36,6 +73,17 @@ export default function ProductFilters() {
     });
   };
 
+  const handleMultiSelectChange = (name, value) => {
+    const currentValues = localFilters[name] || [];
+    const newValues = currentValues.includes(value)
+      ? currentValues.filter(v => v !== value)
+      : [...currentValues, value];
+    setLocalFilters({
+      ...localFilters,
+      [name]: newValues,
+    });
+  };
+
   const applyFilterChanges = () => {
     try {
       applyFilters(localFilters);
@@ -44,9 +92,31 @@ export default function ProductFilters() {
     }
   };
 
+  const resetFilters = () => {
+    const defaultFilters = {
+      priceRange: [0, 2000],
+      rating: 0,
+      category: "",
+      brand: "",
+      ram: [],
+      storage: [],
+      inStock: false,
+    };
+    setLocalFilters(defaultFilters);
+    applyFilters(defaultFilters);
+  };
+
   return (
     <div className="bg-white p-6 rounded-lg shadow-md">
-      <h2 className="text-xl font-semibold mb-4">Filters</h2>
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-xl font-semibold">Filters</h2>
+        <button
+          onClick={resetFilters}
+          className="text-sm text-blue-600 hover:text-blue-800"
+        >
+          Reset All
+        </button>
+      </div>
 
       {error && (
         <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 rounded">
@@ -111,6 +181,66 @@ export default function ProductFilters() {
           ))}
         </select>
       </div>
+
+      {/* Brand Filter */}
+      {brands.length > 0 && (
+        <div className="mb-6">
+          <h3 className="text-lg font-medium mb-2">Brand</h3>
+          <select
+            name="brand"
+            value={localFilters.brand}
+            onChange={handleFilterChange}
+            className="w-full p-2 border rounded"
+          >
+            <option value="">All Brands</option>
+            {brands.map((brand) => (
+              <option key={brand} value={brand}>
+                {brand}
+              </option>
+            ))}
+          </select>
+        </div>
+      )}
+
+      {/* RAM Filter (for electronics) */}
+      {ramOptions.length > 0 && (
+        <div className="mb-6">
+          <h3 className="text-lg font-medium mb-2">RAM</h3>
+          <div className="space-y-2">
+            {ramOptions.map((ram) => (
+              <label key={ram} className="flex items-center">
+                <input
+                  type="checkbox"
+                  checked={(localFilters.ram || []).includes(ram)}
+                  onChange={() => handleMultiSelectChange('ram', ram)}
+                  className="mr-2"
+                />
+                <span className="text-sm">{ram}</span>
+              </label>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Storage Filter (for electronics) */}
+      {storageOptions.length > 0 && (
+        <div className="mb-6">
+          <h3 className="text-lg font-medium mb-2">Storage</h3>
+          <div className="space-y-2">
+            {storageOptions.map((storage) => (
+              <label key={storage} className="flex items-center">
+                <input
+                  type="checkbox"
+                  checked={(localFilters.storage || []).includes(storage)}
+                  onChange={() => handleMultiSelectChange('storage', storage)}
+                  className="mr-2"
+                />
+                <span className="text-sm">{storage}</span>
+              </label>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* In Stock Filter */}
       <div className="mb-6">

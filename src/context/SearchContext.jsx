@@ -8,9 +8,12 @@ export function SearchProvider({ children, products = [] }) {
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredProducts, setFilteredProducts] = useState(products);
   const [filters, setFilters] = useState({
-    priceRange: [0, 1000],
+    priceRange: [0, 2000],
     rating: 0,
     category: "",
+    brand: "",
+    ram: [],
+    storage: [],
     inStock: false,
   });
   const [error, setError] = useState(null);
@@ -19,7 +22,7 @@ export function SearchProvider({ children, products = [] }) {
   const fuse = useCallback(() => {
     try {
       return new Fuse(products, {
-        keys: ["name", "description", "category"],
+        keys: ["name", "description", "category", "brand"],
         threshold: 0.3,
         includeScore: true,
       });
@@ -103,6 +106,45 @@ export function SearchProvider({ children, products = [] }) {
           filtered = filtered.filter(
             (product) => product.category === newFilters.category
           );
+        }
+
+        // Apply brand filter
+        if (newFilters.brand) {
+          filtered = filtered.filter(
+            (product) => product.brand === newFilters.brand
+          );
+        }
+
+        // Apply RAM filter
+        if (newFilters.ram && newFilters.ram.length > 0) {
+          filtered = filtered.filter((product) => {
+            const productRam = product.specifications?.ram;
+            if (!productRam) return false;
+            
+            // Check if any selected RAM matches
+            return newFilters.ram.some(selectedRam => {
+              if (Array.isArray(productRam)) {
+                return productRam.some(r => r.includes(selectedRam) || selectedRam.includes(r));
+              }
+              return productRam.includes(selectedRam) || selectedRam.includes(productRam);
+            });
+          });
+        }
+
+        // Apply Storage filter
+        if (newFilters.storage && newFilters.storage.length > 0) {
+          filtered = filtered.filter((product) => {
+            const productStorage = product.specifications?.storage;
+            if (!productStorage) return false;
+            
+            // Check if any selected storage matches
+            return newFilters.storage.some(selectedStorage => {
+              if (Array.isArray(productStorage)) {
+                return productStorage.some(s => s.includes(selectedStorage) || selectedStorage.includes(s));
+              }
+              return productStorage.includes(selectedStorage) || selectedStorage.includes(productStorage);
+            });
+          });
         }
 
         // Apply stock filter
