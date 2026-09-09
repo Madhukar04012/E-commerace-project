@@ -20,6 +20,9 @@ export default function ProductDetail() {
   const [selectedImage, setSelectedImage] = useState(0);
   const [zoomPosition, setZoomPosition] = useState({ x: 0, y: 0 });
   const [isZoomed, setIsZoomed] = useState(false);
+  const [selectedVariant, setSelectedVariant] = useState(null);
+  const [selectedColor, setSelectedColor] = useState(null);
+  const [selectedStorage, setSelectedStorage] = useState(null);
   
   // Find the product by ID from our data
   useEffect(() => {
@@ -29,6 +32,15 @@ export default function ProductDetail() {
       
       if (foundProduct) {
         setProductData(foundProduct);
+        
+        // Initialize variant selections if product has variants
+        if (foundProduct.variants && foundProduct.variants.length > 0) {
+          // Set default selections from first variant
+          const firstVariant = foundProduct.variants[0];
+          if (firstVariant.color) setSelectedColor(firstVariant.color);
+          if (firstVariant.storage) setSelectedStorage(firstVariant.storage);
+          setSelectedVariant(firstVariant);
+        }
         
         // Check if this product is in cart already, set initial quantity
         const cartItem = cartItems.find(item => item.id === id);
@@ -131,12 +143,20 @@ export default function ProductDetail() {
   
   const handleAddToCart = () => {
     try {
+      // Use variant price if selected, otherwise use product price
+      const finalPrice = selectedVariant?.price || productData.price;
+      const finalStock = selectedVariant?.stock || productData.stock;
+      
       addToCart({
         id: productData.id,
         name: productData.name,
-        price: productData.price,
+        price: finalPrice,
         image: productData.image,
-        quantity
+        quantity,
+        variant: selectedVariant,
+        color: selectedColor,
+        storage: selectedStorage,
+        stock: finalStock
       });
     } catch (err) {
       console.error("Error adding to cart:", err);
@@ -146,12 +166,20 @@ export default function ProductDetail() {
   
   const handleBuyNow = () => {
     try {
+      // Use variant price if selected, otherwise use product price
+      const finalPrice = selectedVariant?.price || productData.price;
+      const finalStock = selectedVariant?.stock || productData.stock;
+      
       addToCart({
         id: productData.id,
         name: productData.name,
-        price: productData.price,
+        price: finalPrice,
         image: productData.image,
-        quantity
+        quantity,
+        variant: selectedVariant,
+        color: selectedColor,
+        storage: selectedStorage,
+        stock: finalStock
       });
       navigate("/checkout");
     } catch (err) {
@@ -512,10 +540,99 @@ export default function ProductDetail() {
               <div>
                 <p className="text-gray-500 mb-1">Availability</p>
                 <p className="font-medium text-gray-900">
-                  {(productData.stock > 0 || productData.inStock) ? 'In Stock' : 'Out of Stock'}
+                  {(selectedVariant?.stock !== undefined ? selectedVariant.stock : productData.stock) > 0 
+                    ? 'In Stock' 
+                    : 'Out of Stock'}
                 </p>
               </div>
             </div>
+            
+            {/* Variant Selection for Mobile Phones and Electronics */}
+            {productData.variants && productData.variants.length > 0 && (
+              <div className="mt-4 border-t border-gray-200 pt-4">
+                <h3 className="text-sm font-medium text-gray-900 mb-3">Select Options</h3>
+                
+                {/* Color Selection */}
+                {productData.specifications?.colors && (
+                  <div className="mb-4">
+                    <p className="text-sm text-gray-700 mb-2">Color: <span className="font-medium">{selectedColor}</span></p>
+                    <div className="flex flex-wrap gap-2">
+                      {productData.specifications.colors.map((color) => (
+                        <button
+                          key={color}
+                          onClick={() => {
+                            setSelectedColor(color);
+                            // Find matching variant
+                            const matchingVariant = productData.variants.find(
+                              v => v.color === color && (!selectedStorage || v.storage === selectedStorage)
+                            );
+                            if (matchingVariant) {
+                              setSelectedVariant(matchingVariant);
+                            }
+                          }}
+                          className={`px-3 py-1.5 text-sm rounded-md border transition-colors ${
+                            selectedColor === color
+                              ? 'bg-blue-600 text-white border-blue-600'
+                              : 'bg-white text-gray-700 border-gray-300 hover:border-blue-500'
+                          }`}
+                        >
+                          {color}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                
+                {/* Storage Selection */}
+                {productData.specifications?.storage && (
+                  <div className="mb-4">
+                    <p className="text-sm text-gray-700 mb-2">Storage: <span className="font-medium">{selectedStorage}</span></p>
+                    <div className="flex flex-wrap gap-2">
+                      {productData.specifications.storage.map((storage) => (
+                        <button
+                          key={storage}
+                          onClick={() => {
+                            setSelectedStorage(storage);
+                            // Find matching variant
+                            const matchingVariant = productData.variants.find(
+                              v => v.storage === storage && (!selectedColor || v.color === selectedColor)
+                            );
+                            if (matchingVariant) {
+                              setSelectedVariant(matchingVariant);
+                            }
+                          }}
+                          className={`px-3 py-1.5 text-sm rounded-md border transition-colors ${
+                            selectedStorage === storage
+                              ? 'bg-blue-600 text-white border-blue-600'
+                              : 'bg-white text-gray-700 border-gray-300 hover:border-blue-500'
+                          }`}
+                        >
+                          {storage}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                
+                {/* Selected Variant Price Display */}
+                {selectedVariant && (
+                  <div className="bg-blue-50 p-3 rounded-md">
+                    <p className="text-sm text-blue-800">
+                      Selected: {selectedColor && <span>{selectedColor} </span>}
+                      {selectedStorage && <span>({selectedStorage})</span>}
+                    </p>
+                    <p className="text-lg font-bold text-blue-900 mt-1">
+                      ${selectedVariant.price.toFixed(2)}
+                    </p>
+                    {selectedVariant.stock < 5 && selectedVariant.stock > 0 && (
+                      <p className="text-xs text-orange-600 mt-1">
+                        Only {selectedVariant.stock} left in stock!
+                      </p>
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -589,18 +706,21 @@ export default function ProductDetail() {
                           <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 bg-gray-50 w-1/3">Category</td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{productData.category}</td>
                         </tr>
-                        <tr className="bg-white">
-                          <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 bg-gray-50 w-1/3">Weight</td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">0.5 kg</td>
-                        </tr>
-                        <tr className="bg-white">
-                          <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 bg-gray-50 w-1/3">Dimensions</td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">10 × 10 × 10 cm</td>
-                        </tr>
-                        <tr className="bg-white">
-                          <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 bg-gray-50 w-1/3">Material</td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Premium Quality</td>
-                        </tr>
+                        {/* Dynamic specifications from product data */}
+                        {productData.specifications && Object.entries(productData.specifications).map(([key, value]) => {
+                          // Skip colors array as it's shown in variant selector
+                          if (key === 'colors') return null;
+                          
+                          const label = key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
+                          return (
+                            <tr key={key} className="bg-white">
+                              <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 bg-gray-50 w-1/3 capitalize">{label}</td>
+                              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                {Array.isArray(value) ? value.join(', ') : String(value)}
+                              </td>
+                            </tr>
+                          );
+                        })}
                       </tbody>
                     </table>
                   </div>
